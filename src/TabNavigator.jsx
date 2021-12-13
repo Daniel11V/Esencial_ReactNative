@@ -1,11 +1,11 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { NavigationContainer } from "@react-navigation/native";
-import { MoneyNavigator } from "./Money/MoneyNavigator";
 import { FoodNavigator } from "./Food/FoodNavigator";
-import { NextNavigator } from "./Next/NextNavigator";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { MoneyNavigator } from "./Money/MoneyNavigator";
+import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StatusBar } from "expo-status-bar";
+import { WatchNavigator } from "./Watch/WatchNavigator";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 export const TabNavigator = () => {
 	const Tab = createBottomTabNavigator();
@@ -24,7 +24,7 @@ export const TabNavigator = () => {
 						} else if (route.name === "Food") {
 							iconName = focused ? "ios-restaurant" : "ios-restaurant-outline";
 							//nutrition, ios-restaurant, ios-basket
-						} else if (route.name === "Next") {
+						} else if (route.name === "Watch") {
 							iconName = focused ? "ios-watch" : "ios-watch-outline";
 							// ios-watch, bluetooth, ios-wifi
 						}
@@ -42,7 +42,7 @@ export const TabNavigator = () => {
 			>
 				<Tab.Screen name="Money" component={MoneyNavigator} />
 				<Tab.Screen name="Food" component={FoodNavigator} />
-				<Tab.Screen name="Next" component={NextNavigator} />
+				<Tab.Screen name="Watch" component={WatchNavigator} />
 			</Tab.Navigator>
 			<StatusBar style="auto" />
 		</NavigationContainer>

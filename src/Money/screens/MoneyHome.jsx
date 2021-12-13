@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { BankList } from "../components/BankList/BankList";
+import { COLORS } from "../../../constants/colors";
 import React from "react";
 
 export const MoneyHome = ({ navigation }) => {
@@ -11,6 +12,7 @@ export const MoneyHome = ({ navigation }) => {
 				handleClickBank={(bankId) =>
 					navigation.push("BankDetails", { bankId: bankId })
 				}
+				simplified={true}
 			/>
 			<Pressable
 				onPress={() => navigation.push("Banks")}
@@ -27,27 +29,25 @@ const styles = StyleSheet.create({
 		padding: 20,
 		width: "100%",
 		minHeight: "100%",
-		backgroundColor: "#fafafa",
+		backgroundColor: COLORS.backgroundScreen,
 	},
 	title: {
 		fontSize: 18,
-		color: "rgba(0, 0, 0, 0.8)",
+		color: COLORS.titleScreen,
 	},
 	nuevaCuentaSubmit: {
-		marginTop: 20,
-		borderColor: "#1976D2",
+		marginTop: 15,
+		borderColor: COLORS.primary,
 		backgroundColor: "#fff",
 		borderWidth: 2,
 		borderRadius: 10,
-		height: 40,
-		width: "100%",
+		paddingVertical: 8,
 		alignItems: "center",
 		justifyContent: "center",
-		elevation: 5,
 	},
 	nuevaCuentaSubmitText: {
-		color: "#1976D2",
-		fontSize: 15,
+		color: COLORS.primary,
+		fontSize: 16,
 		fontWeight: "bold",
 	},
 });
