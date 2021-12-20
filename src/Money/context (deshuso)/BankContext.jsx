@@ -8,8 +8,16 @@ export const BankContext = createContext();
 export const BankProvider = ({ children }) => {
 	const [banks, setBanks] = useState([...BANKSDEFAULT]);
 
+	const setCategory = (bankId, accountId, newCategory) => {
+		let newBanks = JSON.parse(JSON.stringify(banks));
+
+		newBanks[bankId].accounts[accountId].category = newCategory;
+
+		setBanks([...newBanks]);
+	};
+
 	return (
-		<BankContext.Provider value={{ banks, setBanks }}>
+		<BankContext.Provider value={{ banks, setBanks, setCategory }}>
 			{children}
 		</BankContext.Provider>
 	);

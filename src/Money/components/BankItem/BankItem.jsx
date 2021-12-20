@@ -1,32 +1,88 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 
-import { COLORS } from "../../../../constants/colors";
+import { STYLES } from "../../../../constants/styles";
+import { BANKS_INFO } from "../../../../constants/bankConstants";
 import React from "react";
+import orderByDate from "../../../../functions/orderByDate";
+import accountLogoDefault from "../../../../assets/account-logo.png";
 
 export const BankItem = ({ bankInfo, handleClickBank, simplified }) => {
+	const bankIndex = BANKS_INFO.findIndex((bank) => bank.name === bankInfo.name);
+
+	const labelCategoryColor = (category) => {
+		if (category === "uso diario") {
+			return "#e6c300";
+		} else if (category === "ahorro / inversion") {
+			return "#1f993e";
+		} else if (category === "emergencia") {
+			return "#c27300";
+		}
+	};
+
 	return (
 		<TouchableOpacity
 			style={{
-				...styles.bankListItem,
+				...STYLES.roundedItem,
 				flexDirection: simplified ? "row" : "column",
 			}}
-			onPress={() => handleClickBank(bankInfo.id)}
+			onPress={() => handleClickBank(bankInfo.name)}
+			disabled={bankInfo.accounts.length === 0}
 		>
-			<Text style={{ ...styles.bankListInfo, alignSelf: "flex-start" }}>
-				{bankInfo.name}
-			</Text>
-			<View style={{ alignSelf: "flex-start" }}>
-				{bankInfo.accounts.map((account, key) => (
-					<Text
-						key={key}
+			<View
+				style={{
+					alignSelf: "flex-start",
+					...STYLES.row,
+				}}
+			>
+				<Image
+					style={STYLES.tinyBankImg}
+					source={
+						bankIndex === -1
+							? accountLogoDefault
+							: {
+									uri: BANKS_INFO[bankIndex].imgUrl,
+							  }
+					}
+				/>
+				<Text style={STYLES.bigText}>{bankInfo.name}</Text>
+			</View>
+			<View
+				style={{
+					alignSelf: "stretch",
+					justifyContent: "center",
+					marginTop: simplified ? 0 : 5,
+				}}
+			>
+				{orderByDate(bankInfo.accounts).map((account, key) => (
+					<View
 						style={{
-							...styles.bankListInfo,
-							fontWeight: "bold",
-							alignSelf: simplified ? "flex-end" : "flex-start",
+							...STYLES.row,
+							alignSelf: simplified ? "flex-end" : "auto",
+							padding: simplified ? 2 : 5,
 						}}
+						key={key}
 					>
-						{account.ammount} {account.currency}
-					</Text>
+						<Text
+							style={{
+								...STYLES.bigText,
+								fontWeight: "bold",
+							}}
+						>
+							{account.ammount} {account.currency}
+						</Text>
+						{!simplified && account.category ? (
+							<View
+								style={{
+									...styles.accountItemCategory,
+									backgroundColor: labelCategoryColor(account.category),
+								}}
+							>
+								<Text style={styles.accountItemCategoryText}>
+									{account.category}
+								</Text>
+							</View>
+						) : null}
+					</View>
 				))}
 			</View>
 		</TouchableOpacity>
@@ -34,17 +90,16 @@ export const BankItem = ({ bankInfo, handleClickBank, simplified }) => {
 };
 
 const styles = StyleSheet.create({
-	bankListItem: {
-		borderRadius: 10,
-		justifyContent: "space-between",
-		alignItems: "center",
-		backgroundColor: COLORS.backgroundItem,
-		marginTop: 10,
-		paddingHorizontal: 20,
-		paddingVertical: 10,
+	accountItemCategory: {
+		paddingBottom: 2,
+		paddingHorizontal: 8,
+		borderRadius: 5,
+		// width: 140,
+		// alignItems: "center",
 	},
-	bankListInfo: {
-		fontSize: 20,
-		color: COLORS.infoItem,
+	accountItemCategoryText: {
+		color: "#fff",
+		fontWeight: "bold",
+		fontSize: 13,
 	},
 });

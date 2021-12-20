@@ -1,27 +1,53 @@
-import { FlatList, StyleSheet } from "react-native";
-import React, { useContext } from "react";
-
-import { BankContext } from "../../context/BankContext";
+import React from "react";
+import { FlatList } from "react-native";
+import { useSelector } from "react-redux";
 import { BankItem } from "../BankItem/BankItem";
+import { STYLES } from "../../../../constants/styles";
+import orderByDate from "../../../../functions/orderByDate";
 
 export const BankList = ({ handleClickBank, simplified = false }) => {
-	const { banks } = useContext(BankContext);
+	// When simplified == true => Bancos con al menos una
+	// cuenta de uso diario, luego dejar solo estas cuenta
 
-	const simplifiedBanks = () => {
-		let banksUpdatedAccounts = banks.map((bank) => ({
-			...bank,
-			accounts: bank.accounts.filter(
-				(account) => account.category === "uso diario"
-			),
-		}));
+	// Aqui se recive a banks y bank.accounts como arrays en vez de objects
+	const banksFiltered = useSelector((state) =>
+		simplified
+			? Object.values(state.money.banks)
+					.filter(
+						(bank) =>
+							Object.values(bank?.accounts)?.some(
+								(account) => account.category === "uso diario"
+							) || bank.name === "Cargando..."
+					)
+					.map((bank) => ({
+						...bank,
+						accounts: Object.values(bank?.accounts)?.filter(
+							(account) => account.category === "uso diario"
+						),
+					}))
+			: Object.values(state.money.banks).map((bank) => ({
+					...bank,
+					accounts: Object.values(bank?.accounts),
+			  }))
+	);
 
-		return banksUpdatedAccounts.filter((bank) => bank.accounts.length > 0);
-	};
+	const banksFinalList = banksFiltered.length
+		? orderByDate(banksFiltered)
+		: [{ name: "Ninguna cuenta registrada...", accounts: [] }];
 
-	return (
+	return simplified ? (
+		banksFinalList.map((bankInfo, key) => (
+			<BankItem
+				key={key}
+				bankInfo={bankInfo}
+				handleClickBank={handleClickBank}
+				simplified={simplified}
+			/>
+		))
+	) : (
 		<FlatList
-			data={simplified ? simplifiedBanks() : banks}
-			style={styles.bankListStyle}
+			data={banksFinalList}
+			style={STYLES.flatListSetup}
 			renderItem={(data) => (
 				<BankItem
 					bankInfo={data.item}
@@ -29,14 +55,10 @@ export const BankList = ({ handleClickBank, simplified = false }) => {
 					simplified={simplified}
 				/>
 			)}
-			keyExtractor={(item) => item.id}
+			keyExtractor={(item) => item.name}
+			showsVerticalScrollIndicator={false}
+			showsHorizontalScrollIndicator={false}
+			nestedScrollEnabled
 		/>
 	);
 };
-
-const styles = StyleSheet.create({
-	bankListStyle: {
-		width: "100%",
-		flexGrow: 0,
-	},
-});

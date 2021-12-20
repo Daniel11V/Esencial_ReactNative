@@ -1,0 +1,1 @@
+export const URL_API = 'https://esencial-default-rtdb.firebaseio.com'

@@ -1,18 +1,18 @@
 import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
-import { WatchHome } from "./screens/WatchHome";
+import { UserHome } from "./screens/UserHome";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-export const WatchNavigator = () => {
+export const UserNavigator = () => {
 	const Stack = createNativeStackNavigator();
 
 	return (
 		<NavigationContainer independent={true}>
-			<Stack.Navigator initialRouteName="WatchHome">
+			<Stack.Navigator initialRouteName="UserHome">
 				<Stack.Screen
-					name="WatchHome"
-					component={WatchHome}
-					options={{ title: "Esencial - Mi Reloj" }}
+					name="UserHome"
+					component={UserHome}
+					options={{ title: "Esencial - Mi Perfil" }}
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>

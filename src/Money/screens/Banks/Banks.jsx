@@ -1,68 +1,72 @@
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, SafeAreaView, Text, View } from "react-native";
 
 import { BankList } from "../../components/BankList/BankList";
-import { COLORS } from "../../../../constants/colors";
 import React from "react";
+import { useSelector } from "react-redux";
+import { STYLES } from "../../../../constants/styles";
 
 export const Banks = ({ navigation }) => {
+	const banks = useSelector((state) => state.money.banks);
+
+	const openBalance = () => {
+		let totalCurrencies = [];
+		let totalCurrenciesString = "";
+
+		if (Object.values(banks).length) {
+			Object.values(banks).map((bank) => {
+				Object.values(bank.accounts).map((account) => {
+					const currencyPosition = totalCurrencies.findIndex(
+						(curr) => curr.name === account.currency
+					);
+
+					if (currencyPosition >= 0) {
+						totalCurrencies[currencyPosition].total += account.ammount;
+					} else {
+						totalCurrencies.push({
+							name: account.currency,
+							total: account.ammount,
+						});
+					}
+				});
+			});
+
+			totalCurrencies.map((currency, id) => {
+				if (id) {
+					totalCurrenciesString += `\n${currency.name}:  ${currency.total}`;
+				} else {
+					totalCurrenciesString += `${currency.name}:  ${currency.total}`;
+				}
+			});
+		} else {
+			totalCurrenciesString = "Ninguna cuenta registrada...";
+		}
+
+		Alert.alert("Saldo Total", totalCurrenciesString, [{ text: "Listo" }]);
+	};
+
 	return (
 		<SafeAreaView
-			style={{ ...styles.screenContainer, flex: 1 }}
+			style={{ ...STYLES.screenContainer, flex: 1 }}
 			forceInset="top"
 		>
-			<View>
-				<View style={styles.bankList}>
-					<View style={styles.btnsContainer}>
-						<Pressable
-							onPress={() => navigation.push("BankForm")}
-							style={styles.btnsBox}
-						>
-							<Text style={styles.btnsText}>Saldo Total</Text>
-						</Pressable>
-						<Pressable
-							onPress={() => navigation.push("BankForm")}
-							style={styles.btnsBox}
-						>
-							<Text style={styles.btnsText}>Añadir cuenta</Text>
-						</Pressable>
-					</View>
-					<BankList
-						handleClickBank={(bankId) =>
-							navigation.push("BankDetails", { bankId: bankId })
-						}
-					/>
-				</View>
+			<View style={STYLES.boxesContainer}>
+				<Pressable onPress={openBalance} style={STYLES.btnSecondaryMiddle}>
+					<Text style={STYLES.btnSecondaryText}>Saldo Total</Text>
+				</Pressable>
+				<Pressable
+					onPress={() => navigation.push("BankForm")}
+					style={{
+						...STYLES.btnSecondaryMiddle,
+					}}
+				>
+					<Text style={STYLES.btnSecondaryText}>Añadir cuenta</Text>
+				</Pressable>
 			</View>
+			<BankList
+				handleClickBank={(bankName) =>
+					navigation.push("BankDetails", { bankName })
+				}
+			/>
 		</SafeAreaView>
 	);
 };
-
-const styles = StyleSheet.create({
-	screenContainer: {
-		padding: 20,
-		width: "100%",
-		minHeight: "100%",
-		backgroundColor: COLORS.backgroundScreen,
-	},
-	btnsContainer: {
-		flexDirection: "row",
-		flexWrap: "wrap",
-		justifyContent: "space-between",
-	},
-	btnsBox: {
-		borderRadius: 10,
-		borderWidth: 3,
-		borderColor: COLORS.primary,
-		backgroundColor: "#fff",
-		width: "49%",
-		flexGrow: 0,
-		paddingVertical: 10,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	btnsText: {
-		fontSize: 15,
-		color: COLORS.primary,
-		fontWeight: "bold",
-	},
-});

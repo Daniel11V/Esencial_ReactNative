@@ -1,45 +1,61 @@
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
-import React, { useContext } from "react";
+import { Alert, Image, Pressable, Text, View } from "react-native";
+import React, { useRef, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Picker } from "@react-native-picker/picker";
 
-import { BankContext } from "../../context/BankContext";
-import { COLORS } from "../../../../constants/colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useState } from "react/cjs/react.development";
+import { COLORS } from "../../../../constants/colors";
+import { STYLES } from "../../../../constants/styles";
+import {
+	BANKS_INFO,
+	ACCOUNTS_CATEGORIES,
+} from "../../../../constants/bankConstants";
+import orderByDate from "../../../../functions/orderByDate";
+import accountLogoDefault from "../../../../assets/account-logo.png";
+
+import {
+	deleteAccount,
+	deleteBank,
+	updateAccount,
+} from "../../../../store/actions/bank.action";
 
 export const BankDetails = ({ route, navigation }) => {
-	const { bankId } = route.params;
-	const { banks, setBanks } = useContext(BankContext);
-	const currentBankPosition = banks.findIndex((bank) => bank.id == bankId);
-	const currentBank = { ...banks[currentBankPosition] };
-	const [selectedCurrency, setSelectedCurrency] = useState(
-		currentBank.accounts[0]
+	const { bankName, hasNewCurrency } = route.params;
+
+	const dispatch = useDispatch();
+	const bank = useSelector((state) => state.money.banks[bankName]);
+
+	const [selectedAccount, setSelectedAccount] = useState(() =>
+		hasNewCurrency ? hasNewCurrency : Object.keys(bank.accounts)[0]
 	);
 
+	const bankIndex = BANKS_INFO.findIndex((item) => item.name === bank.name);
+	const pickerCategory = useRef();
+
+	useEffect(() => {
+		hasNewCurrency && setSelectedAccount(hasNewCurrency);
+	}, [hasNewCurrency]);
+
 	const onDelete = () => {
-		let banksUpdatedDelete = [...banks];
-		const currentAccountPosition = banksUpdatedDelete[
-			currentBankPosition
-		].accounts.findIndex(
-			(account) => account.currency == selectedCurrency.currency
-		);
-
-		banksUpdatedDelete[currentBankPosition].accounts.splice(
-			currentAccountPosition,
-			1
-		);
-
-		if (banksUpdatedDelete[currentBankPosition].accounts.length > 0) {
-			setBanks([...banksUpdatedDelete]);
-			setSelectedCurrency(currentBank.accounts[0]);
-		} else {
+		if (Object.keys(bank.accounts).length === 1) {
 			navigation.goBack();
-			setBanks([...banksUpdatedDelete.filter((bank) => bank.id != bankId)]);
+			dispatch(deleteBank(bank.name));
+		} else {
+			dispatch(
+				deleteAccount(bank.name, bank.accounts[selectedAccount]?.currency)
+			);
+			const accountsNames = Object.keys(bank.accounts);
+			setSelectedAccount(
+				selectedAccount === accountsNames[0]
+					? accountsNames[1]
+					: accountsNames[0]
+			);
 		}
 	};
 
 	const handleDelete = () => {
 		Alert.alert(
-			`Estas seguro que deseas eliminar la cuenta "${currentBank.name} ${selectedCurrency.currency}"`,
+			`Estas seguro que deseas eliminar la cuenta "${bank.name} ${bank.accounts[selectedAccount]?.currency}"`,
 			"Esta accion no se podra deshacer",
 			[
 				{ text: "Cancelar", style: "cancel" },
@@ -49,42 +65,59 @@ export const BankDetails = ({ route, navigation }) => {
 	};
 
 	return (
-		<View style={styles.screenContainer}>
-			<View style={styles.row}>
-				<Text style={styles.title}>{currentBank.name}</Text>
-				<Pressable
-					onPress={() =>
-						navigation.push("BankForm", {
-							insideBank: bankId,
-							isNewCurrency: true,
-						})
+		<View style={STYLES.screenContainer}>
+			<View style={{ ...STYLES.row, justifyContent: "flex-start" }}>
+				<Image
+					style={STYLES.titleBankImg}
+					source={
+						bankIndex === -1
+							? accountLogoDefault
+							: {
+									uri: BANKS_INFO[bankIndex].imgUrl,
+							  }
 					}
-				>
-					<Text style={styles.addAccountText}>Añadir moneda</Text>
-				</Pressable>
+				/>
+				<Text style={STYLES.bigTitle}>{bank.name}</Text>
 			</View>
-			<View style={styles.currencyContainer}>
-				{currentBank.accounts.map((account, key) => (
+			<Pressable
+				style={{
+					alignSelf: "flex-end",
+					marginVertical: 10,
+				}}
+				onPress={() =>
+					navigation.push("BankForm", {
+						insideBank: bankName,
+						isNewCurrency: true,
+					})
+				}
+			>
+				<Text style={STYLES.btnThirdText}>Añadir moneda</Text>
+			</Pressable>
+			<View style={STYLES.boxesContainer}>
+				{orderByDate(Object.values(bank.accounts)).map((account, key) => (
 					<Pressable
 						key={key}
-						onPress={() => setSelectedCurrency(account)}
+						onPress={() => setSelectedAccount(account.currency)}
 						style={{
-							...styles.currencyBox,
-							...(selectedCurrency.currency == account.currency &&
-								styles.selected),
+							...(bank.accounts[selectedAccount]?.currency == account.currency
+								? STYLES.btnSecondaryMiddle
+								: STYLES.roundedItemMiddle),
+							paddingHorizontal: 12,
+							paddingVertical: 12,
+							justifyContent: "space-between",
 						}}
 					>
 						<Text
 							style={{
-								...styles.bankListInfo,
+								...STYLES.bigText,
 								fontWeight: "bold",
-								...(selectedCurrency.currency == account.currency &&
-									styles.selectedText),
+								...(bank.accounts[selectedAccount]?.currency ==
+									account.currency && { color: COLORS.primary }),
 							}}
 						>
 							{account.ammount} {account.currency}
 						</Text>
-						{selectedCurrency.currency == account.currency && (
+						{bank.accounts[selectedAccount]?.currency == account.currency && (
 							<Pressable onPress={handleDelete}>
 								<Ionicons
 									name="close-circle"
@@ -96,100 +129,50 @@ export const BankDetails = ({ route, navigation }) => {
 					</Pressable>
 				))}
 			</View>
-			<Text style={styles.subtitle}>Detalles</Text>
-			<View style={styles.row}>
-				<Text style={styles.text}>Cuenta de {selectedCurrency.category}</Text>
-				<Pressable
-					onPress={() =>
-						navigation.push("BankForm", {
-							insideBank: bankId,
-							isNewCurrency: true,
-						})
-					}
-					//Picker
-				>
-					<Text style={styles.addAccountText}>Cambiar</Text>
-				</Pressable>
+			<Text style={STYLES.subtitle}>Detalles</Text>
+			<View style={STYLES.row}>
+				<Text style={STYLES.normalText}>
+					Cuenta de {bank.accounts[selectedAccount]?.category}
+				</Text>
+				<View>
+					<Pressable onPress={() => pickerCategory.current.focus()}>
+						<Text style={STYLES.btnThirdText}>Cambiar</Text>
+					</Pressable>
+					<Picker
+						selectedValue={bank.accounts[selectedAccount]?.category}
+						onValueChange={(newValue) =>
+							dispatch(
+								updateAccount(
+									bank.name,
+									bank.accounts[selectedAccount]?.currency,
+									"category",
+									newValue
+								)
+							)
+						}
+						ref={pickerCategory}
+						style={STYLES.invisible}
+						prompt="Tipo de cuenta"
+					>
+						{ACCOUNTS_CATEGORIES.map((categoryName, key) => (
+							<Picker.Item
+								key={key}
+								label={`   Cuenta de ${categoryName}`}
+								value={categoryName}
+								style={{
+									...STYLES.bigText,
+									backgroundColor:
+										categoryName === bank.accounts[selectedAccount]?.category
+											? COLORS.tinyGray
+											: "#fff",
+								}}
+							/>
+						))}
+					</Picker>
+				</View>
 			</View>
 			{/* Operaciones */}
-			<Text style={styles.subtitle}>Operaciones</Text>
+			<Text style={STYLES.subtitle}>Operaciones</Text>
 		</View>
 	);
 };
-
-const styles = StyleSheet.create({
-	screenContainer: {
-		padding: 20,
-		width: "100%",
-		minHeight: "100%",
-		backgroundColor: COLORS.backgroundScreen,
-	},
-	row: {
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "space-between",
-	},
-	title: {
-		fontWeight: "bold",
-		fontSize: 28,
-		color: COLORS.titleScreen,
-	},
-	deleteBank: {
-		borderColor: COLORS.deleteRed,
-		backgroundColor: "#ffffff",
-		borderWidth: 2,
-		borderRadius: 10,
-		height: 40,
-		width: "40%",
-		alignItems: "center",
-		justifyContent: "center",
-		elevation: 5,
-	},
-	addAccountText: {
-		color: COLORS.primary,
-		fontSize: 15,
-		fontWeight: "bold",
-		borderBottomWidth: 1,
-		borderBottomColor: COLORS.primary,
-	},
-	currencyContainer: {
-		flexDirection: "row",
-		flexWrap: "wrap",
-		justifyContent: "space-between",
-	},
-	currencyBox: {
-		borderRadius: 10,
-		borderWidth: 3,
-		borderColor: COLORS.backgroundItem,
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "space-between",
-		backgroundColor: COLORS.backgroundItem,
-		marginTop: 10,
-		paddingHorizontal: 10,
-		paddingVertical: 15,
-		width: "49%",
-		flexGrow: 0,
-	},
-	bankListInfo: {
-		fontSize: 20,
-		color: COLORS.textScreen,
-	},
-	selected: {
-		borderColor: COLORS.primary,
-		backgroundColor: "#fff",
-	},
-	selectedText: {
-		color: COLORS.primary,
-	},
-	subtitle: {
-		fontWeight: "bold",
-		fontSize: 24,
-		color: COLORS.textScreen,
-		marginTop: 20,
-	},
-	text: {
-		fontSize: 15,
-		color: COLORS.textScreen,
-	},
-});
