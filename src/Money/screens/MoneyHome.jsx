@@ -5,16 +5,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import { STYLES } from "../../../constants/styles";
 import { BankList } from "../components/BankList/BankList";
 
-import { getBanks } from "../../../store/actions/bank.action";
+import { getFirstView } from "../../../store/actions/money.action";
 import { useDispatch } from "react-redux";
-import { getOperations } from "../../../store/actions/operation.action";
 import { OperationList } from "../components/OperationList/OperationList";
 
 export const MoneyHome = ({ navigation }) => {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		dispatch(getBanks());
+		dispatch(getFirstView());
+		//dispatch(getBanks());
 		//dispatch(getOperations());
 	}, []);
 
@@ -40,28 +40,27 @@ export const MoneyHome = ({ navigation }) => {
 					<Text style={{ ...STYLES.smalltitle, marginTop: 10 }}>
 						Actividad Reciente
 					</Text>
-					{/* <OperationList
-						handleClickBank={
-							(bankName) => navigation.push("BankDetails", { bankName }) ////
+					<OperationList
+						handleClickOperation={(operationId) =>
+							navigation.push("OperationDetails", { operationId })
 						}
-						showOnlyThree={false}
-					/> */}
+						showOnlyThree={true}
+					/>
 					<Pressable
-						onPress={() => navigation.push("Banks")}
+						onPress={() => navigation.push("Operations")}
 						style={STYLES.btnSecondary}
 					>
 						<Text style={STYLES.btnSecondaryText}>Ver todas...</Text>
 					</Pressable>
-
-					{/* Registrar Operacion */}
 				</View>
 			</ScrollView>
+			{/* Registrar Operacion */}
 			<LinearGradient
 				colors={["transparent", "#ffffff"]}
 				style={STYLES.actionBoxFixed}
 			>
 				<Pressable
-					onPress={() => navigation.push("Banks")}
+					onPress={() => navigation.push("OperationForm")}
 					style={{ ...STYLES.btnPrimary, borderRadius: 50 }}
 				>
 					<Text style={STYLES.btnPrimaryText}>Realizar operación</Text>

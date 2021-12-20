@@ -31,7 +31,11 @@ export const BankList = ({ handleClickBank, simplified = false }) => {
 			  }))
 	);
 
-	const banksFinalList = banksFiltered.length
+	const loadingFirstView = useSelector((state) => state.money.loadingFirstView);
+
+	const banksFinalList = loadingFirstView
+		? [{ name: "Cargando...", accounts: [] }]
+		: banksFiltered.length
 		? orderByDate(banksFiltered)
 		: [{ name: "Ninguna cuenta registrada...", accounts: [] }];
 

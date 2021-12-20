@@ -7,7 +7,7 @@ import {
 	TextInput,
 } from "react-native";
 import React, { useRef, useState } from "react";
-import { addAccount, addBank } from "../../../../store/actions/bank.action";
+import { addAccount, addBank } from "../../../../store/actions/money.action";
 
 import { COLORS } from "../../../../constants/colors";
 import { Picker } from "@react-native-picker/picker";

@@ -42,6 +42,10 @@ export const STYLES = StyleSheet.create({
         fontSize: 15,
         color: 'rgba(0, 0, 0, 0.6)',
     },
+    normalText2: {
+        fontSize: 18,
+        color: 'rgba(0, 0, 0, 0.6)',
+    },
     bigText: {
         fontSize: 20,
         color: 'rgba(0, 0, 0, 0.6)',
@@ -176,7 +180,7 @@ export const STYLES = StyleSheet.create({
         marginTop: 30,
         marginBottom: 10,
         paddingLeft: 8,
-        paddingBottom: 20,
+        paddingBottom: 18,
         fontSize: 20,
         borderBottomWidth: 2,
         borderBottomColor: COLORS.primary,
@@ -188,6 +192,9 @@ export const STYLES = StyleSheet.create({
         fontSize: 20,
         borderBottomWidth: 2,
         borderBottomColor: COLORS.primary,
+    },
+    middle: {
+        width: '45%',
     },
     incompleteInput: {
         color: COLORS.deleteRed,

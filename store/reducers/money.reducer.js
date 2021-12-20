@@ -1,15 +1,15 @@
-import { ADD_ACCOUNT, ADD_BANK, DELETE_ACCOUNT, DELETE_BANK, SET_BANKS, UPDATE_ACCOUNT } from "../actions/bank.action"
-import { ADD_OPERATION, DELETE_OPERATION, SET_OPERATIONS, UPDATE_OPERATION } from "../actions/operation.action"
-
+import { ADD_ACCOUNT, ADD_BANK, DELETE_ACCOUNT, DELETE_BANK, END_LOADING, SET_BANKS, UPDATE_ACCOUNT, ADD_OPERATION, DELETE_OPERATION, SET_OPERATIONS } from "../actions/money.action"
 
 const initialState = {
     banks: {},
     operations: {},
-    loading: true
+    loadingFirstView: true
 }
 
 const MoneyReducer = (state = initialState, { type, payload }) => {
     switch (type) {
+        case END_LOADING:
+            return { ...state, loadingFirstView: payload.loadingState }
         case SET_BANKS:
             return { ...state, banks: { ...payload.banksUpdated } }
         case ADD_BANK:
@@ -44,17 +44,15 @@ const MoneyReducer = (state = initialState, { type, payload }) => {
             return {
                 ...state, banks: { ...deleteAccountState }
             }
+
+        // Operations
         case SET_OPERATIONS:
             return { ...state, operations: { ...payload.operationsUpdated } }
         case ADD_OPERATION:
-            return { ...state, operations: { ...state.operations, [payload.operationInfo.name]: payload.operationInfo } }
-        case UPDATE_OPERATION:
-            let updateOperationState = JSON.parse(JSON.stringify(state.operations))
-            updateOperationState[payload.operationName].accounts[payload.currency][payload.key] = payload.newValue
-            return { ...state, operations: { ...updateOperationState } }
+            return { ...state, operations: { ...state.operations, [payload.operationInfo.creationDate]: payload.operationInfo } }
         case DELETE_OPERATION:
             let deleteOperationState = JSON.parse(JSON.stringify(state.operations))
-            delete deleteOperationState[payload.operationName]
+            delete deleteOperationState[payload.operationId]
             return {
                 ...state, operations: { ...deleteOperationState }
             }

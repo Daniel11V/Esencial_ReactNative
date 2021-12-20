@@ -5,6 +5,9 @@ import { MoneyHome } from "./screens/MoneyHome";
 import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { OperationDetails } from "./screens/OperationDetails/OperationDetails";
+import { Operations } from "./screens/Operations/Operations";
+import { OperationForm } from "./screens/OperationForm/OperationForm";
 
 export const MoneyNavigator = () => {
 	const Stack = createNativeStackNavigator();
@@ -37,6 +40,22 @@ export const MoneyNavigator = () => {
 							? "Añadir Moneda"
 							: "Añadir Cuenta",
 					})}
+				/>
+				<Stack.Screen
+					name="Operations"
+					component={Operations}
+					options={{ title: "Historial de Operaciones" }}
+				/>
+				<Stack.Screen
+					name="OperationDetails"
+					component={OperationDetails}
+					options={{ title: "Detalle de Operación" }}
+					initialParams={{ operationId: null }}
+				/>
+				<Stack.Screen
+					name="OperationForm"
+					component={OperationForm}
+					options={{ title: "Realizar Operación" }}
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>

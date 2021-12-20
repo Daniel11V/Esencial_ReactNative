@@ -49,7 +49,7 @@ export const BANKS_INFO = [
         imgUrl: "https://diariofinanciero.com/wp-content/uploads/2018/04/Santander-nuevo-logo.jpg",
     },
     {
-        name: "Macro",
+        name: "Banco Macro",
         imgUrl: "https://play-lh.googleusercontent.com/H4Wm-u7pH8WSOeHyUB5x0ajvBTuwzqX7kL6yVn5itTmUowOeciIA7UIgB8iUscofSA",
     },
     {

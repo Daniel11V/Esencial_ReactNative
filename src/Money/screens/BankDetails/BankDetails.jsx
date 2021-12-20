@@ -17,7 +17,7 @@ import {
 	deleteAccount,
 	deleteBank,
 	updateAccount,
-} from "../../../../store/actions/bank.action";
+} from "../../../../store/actions/money.action";
 
 export const BankDetails = ({ route, navigation }) => {
 	const { bankName, hasNewCurrency } = route.params;
