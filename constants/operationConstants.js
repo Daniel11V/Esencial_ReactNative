@@ -28,6 +28,13 @@ export const OPERATIONS_DEFAULT = {
             currency: 'ARS',
             ammount: 0
         },
+    },
+    [Date.now()]: {
+        type: 3,
+        creationDate: Date.now(),
+        accountName: 'Efectivo',
+        currencyName: 'ARS',
+        finalAmmount: 0
     }
 */
 
@@ -35,7 +42,7 @@ export const OPERATIONS_TYPES = [
     'Inicio de registros',
     'Creacion de cuenta',
     'Movimiento',
-    'Conversión de moneda',
+    'Cierre de cuenta',
     'Ingreso',
     'Pago',
 ]

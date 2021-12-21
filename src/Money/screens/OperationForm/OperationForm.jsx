@@ -34,11 +34,11 @@ export const OperationForm = ({ navigation }) => {
 	const [fromAmmount, setFromAmmount] = useState(null);
 
 	const [sendToBankList, setSendToBankList] = useState({
-		Efectivo: { accounts: { ARS: {} } },
+		Efectivo: { accounts: { USD: {} } },
 	});
 
 	const [sendToName, setSendToName] = useState("Efectivo");
-	const [sendToCurrency, setSendToCurrency] = useState("ARS");
+	const [sendToCurrency, setSendToCurrency] = useState("USD");
 	const [sendToAmmount, setSendToAmmount] = useState(null);
 
 	const [incomplete, setIncomplete] = useState({
@@ -69,7 +69,7 @@ export const OperationForm = ({ navigation }) => {
 
 		setSendToCurrency(
 			Object.values(Object.values(fromBankListCopy)[0].accounts).some(
-				(account) => account.currency.localeCompare(fromCurrency)
+				(account) => !account.currency.localeCompare(fromCurrency)
 			)
 				? fromCurrency
 				: Object.values(Object.values(fromBankListCopy)[0].accounts)[0].currency
@@ -205,7 +205,8 @@ export const OperationForm = ({ navigation }) => {
 							keyboardType="numeric"
 							onChangeText={(newAmmount) => {
 								setFromAmmount(newAmmount);
-								fromCurrency === sendToCurrency && setSendToAmmount(newAmmount);
+								!fromCurrency.localeCompare(sendToCurrency) &&
+									setSendToAmmount(newAmmount);
 							}}
 						/>
 					</View>
@@ -279,7 +280,7 @@ export const OperationForm = ({ navigation }) => {
 						}}
 					>
 						<Text style={{ ...STYLES.textInput, marginTop: 14 }}>$</Text>
-						{sendToCurrency === fromCurrency ? (
+						{sendToCurrency.localeCompare(fromCurrency) === 0 ? (
 							<Text style={{ ...STYLES.textInput, flexGrow: 1, marginTop: 14 }}>
 								{sendToAmmount ? sendToAmmount : 0}
 							</Text>

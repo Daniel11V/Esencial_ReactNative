@@ -7,7 +7,11 @@ import {
 	TextInput,
 } from "react-native";
 import React, { useRef, useState } from "react";
-import { addAccount, addBank } from "../../../../store/actions/money.action";
+import {
+	addAccount,
+	addBank,
+	addOperation,
+} from "../../../../store/actions/money.action";
 
 import { COLORS } from "../../../../constants/colors";
 import { Picker } from "@react-native-picker/picker";
@@ -66,6 +70,16 @@ export const BankForm = ({ route, navigation }) => {
 				currency == "Otra"
 					? otherCurrency.toUpperCase()
 					: currency.toUpperCase();
+
+			dispatch(
+				addOperation({
+					type: 1,
+					creationDate: Date.now(),
+					accountName: newName,
+					currencyName: newCurrency,
+					initialAmmount: ammount ? Number(ammount) : 0,
+				})
+			);
 
 			if (isNewCurrency) {
 				dispatch(

@@ -35,18 +35,38 @@ export const OperationDetails = ({ route }) => {
 					{OPERATIONS_TYPES[operation.type]}
 				</Text>
 			)}
-			<Text style={STYLES.subtitle}>Cuenta destino</Text>
-			<View style={{ ...STYLES.row, justifyContent: "flex-start" }}>
-				<Text style={STYLES.bigText}>{operation?.sendTo?.name}: </Text>
-				<Text style={STYLES.bigText}> + {operation?.sendTo?.ammount} </Text>
-				<Text style={STYLES.bigText}>{operation?.sendTo?.currency}</Text>
-			</View>
-			<Text style={STYLES.subtitle}>Cuenta origen</Text>
-			<View style={{ ...STYLES.row, justifyContent: "flex-start" }}>
-				<Text style={STYLES.bigText}>{operation?.from?.name}: </Text>
-				<Text style={STYLES.bigText}> - {operation?.from?.ammount} </Text>
-				<Text style={STYLES.bigText}>{operation?.from?.currency}</Text>
-			</View>
+			{operation.type === 2 && (
+				<View>
+					<Text style={STYLES.subtitle}>Cuenta destino</Text>
+					<Text style={STYLES.bigText}>
+						{operation.sendTo.name}
+						{":  + "}
+						{operation.sendTo.ammount} {operation.sendTo.currency}
+					</Text>
+					<Text style={STYLES.subtitle}>Cuenta origen</Text>
+					<Text style={STYLES.bigText}>
+						{operation.from.name}
+						{":  - "}
+						{operation.from.ammount} {operation.from.currency}
+					</Text>
+				</View>
+			)}
+			{(operation.type === 1 || operation.type === 3) && (
+				<View>
+					<Text style={STYLES.subtitle}>{operation.accountName}</Text>
+					<Text style={STYLES.bigText}>
+						{operation.type === 1
+							? "Monto inicial:  " +
+							  operation.initialAmmount +
+							  " " +
+							  operation.currencyName
+							: "Monto final:  " +
+							  operation.finalAmmount +
+							  " " +
+							  operation.currencyName}
+					</Text>
+				</View>
+			)}
 		</View>
 	);
 };

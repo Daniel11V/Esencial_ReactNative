@@ -6,6 +6,20 @@ import { OPERATIONS_TYPES } from "../../../../constants/operationConstants";
 import { STYLES } from "../../../../constants/styles";
 
 export const OperationItem = ({ operationInfo, handleClickOperation }) => {
+	const date = new Date(operationInfo.creationDate);
+	const completeDate =
+		(date.getHours() < 10 ? "0" : "") +
+		date.getHours() +
+		":" +
+		(date.getMinutes() < 10 ? "0" : "") +
+		date.getMinutes() +
+		"  " +
+		date.getDate() +
+		"/" +
+		(date.getMonth() + 1) +
+		"/" +
+		date.getFullYear();
+
 	return (
 		<TouchableOpacity
 			style={{ ...STYLES.roundedItem, ...STYLES.row, paddingVertical: 5 }}
@@ -16,7 +30,7 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 				style={{
 					alignSelf: "stretch",
 					justifyContent: "flex-start",
-					maxWidth: "60%",
+					maxWidth: operationInfo.type !== -1 ? "60%" : "100%",
 				}}
 			>
 				{!!operationInfo.title?.length && (
@@ -31,24 +45,17 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 						>
 							{OPERATIONS_TYPES[operationInfo.type]}
 						</Text>
-						<Text style={STYLES.normalText}>
-							{new Date(operationInfo.creationDate).toLocaleTimeString(
-								"en-US"
-							) +
-								"  " +
-								new Date(operationInfo.creationDate).getDate() +
-								"/" +
-								(new Date(operationInfo.creationDate).getMonth() + 1) +
-								"/" +
-								new Date(operationInfo.creationDate).getFullYear()}
-						</Text>
+						<Text style={STYLES.normalText}>{completeDate}</Text>
 					</View>
 				)}
 			</View>
-			{operationInfo.type === 1 && (
+			{(operationInfo.type === 1 || operationInfo.type === 3) && (
 				<View style={{ alignItems: "flex-end" }}>
 					<Text style={{ ...STYLES.bigText, fontWeight: "bold" }}>
-						{operationInfo.initialAmmount} {operationInfo.currencyName}
+						{operationInfo.type === 1
+							? operationInfo.initialAmmount
+							: "-" + operationInfo.finalAmmount}{" "}
+						{operationInfo.currencyName}
 					</Text>
 					<Text style={{ ...STYLES.normalText }}>
 						{operationInfo.accountName}

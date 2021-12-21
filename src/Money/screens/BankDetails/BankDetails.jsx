@@ -1,4 +1,4 @@
-import { Alert, Image, Pressable, Text, View } from "react-native";
+import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
 import React, { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Picker } from "@react-native-picker/picker";
@@ -14,10 +14,12 @@ import orderByDate from "../../../../functions/orderByDate";
 import accountLogoDefault from "../../../../assets/account-logo.png";
 
 import {
+	addOperation,
 	deleteAccount,
 	deleteBank,
 	updateAccount,
 } from "../../../../store/actions/money.action";
+import { OperationList } from "../../components/OperationList/OperationList";
 
 export const BankDetails = ({ route, navigation }) => {
 	const { bankName, hasNewCurrency } = route.params;
@@ -37,6 +39,15 @@ export const BankDetails = ({ route, navigation }) => {
 	}, [hasNewCurrency]);
 
 	const onDelete = () => {
+		dispatch(
+			addOperation({
+				type: 3,
+				creationDate: Date.now(),
+				accountName: bank.name,
+				currencyName: bank.accounts[selectedAccount]?.currency,
+				finalAmmount: bank.accounts[selectedAccount]?.ammount,
+			})
+		);
 		if (Object.keys(bank.accounts).length === 1) {
 			navigation.goBack();
 			dispatch(deleteBank(bank.name));
@@ -65,7 +76,7 @@ export const BankDetails = ({ route, navigation }) => {
 	};
 
 	return (
-		<View style={STYLES.screenContainer}>
+		<ScrollView style={{ ...STYLES.screenContainer, flex: 1 }}>
 			<View style={{ ...STYLES.row, justifyContent: "flex-start" }}>
 				<Image
 					style={STYLES.titleBankImg}
@@ -172,7 +183,16 @@ export const BankDetails = ({ route, navigation }) => {
 				</View>
 			</View>
 			{/* Operaciones */}
-			<Text style={STYLES.subtitle}>Operaciones</Text>
-		</View>
+			{/* <View style={{ marginBottom: 50 }}> */}
+			<Text style={{ ...STYLES.subtitle, marginBottom: 0 }}>Operaciones</Text>
+			<OperationList
+				handleClickOperation={(operationId) =>
+					navigation.push("OperationDetails", { operationId })
+				}
+				filter={{ bank: bankName, account: selectedAccount }}
+				verticalSpace={true}
+			/>
+			{/* </View> */}
+		</ScrollView>
 	);
 };

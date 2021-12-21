@@ -14,6 +14,7 @@ export const MoneyHome = ({ navigation }) => {
 
 	useEffect(() => {
 		dispatch(getFirstView());
+		console.log("Fetching");
 		//dispatch(getBanks());
 		//dispatch(getOperations());
 	}, []);
@@ -61,7 +62,7 @@ export const MoneyHome = ({ navigation }) => {
 			>
 				<Pressable
 					onPress={() => navigation.push("OperationForm")}
-					style={{ ...STYLES.btnPrimary, borderRadius: 50 }}
+					style={{ ...STYLES.btnPrimary, borderRadius: 50, elevation: 4 }}
 				>
 					<Text style={STYLES.btnPrimaryText}>Realizar operación</Text>
 				</Pressable>
