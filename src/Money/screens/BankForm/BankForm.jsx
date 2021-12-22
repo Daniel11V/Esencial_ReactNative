@@ -5,6 +5,7 @@ import {
 	ScrollView,
 	Text,
 	TextInput,
+	View,
 } from "react-native";
 import React, { useRef, useState } from "react";
 import {
@@ -217,15 +218,24 @@ export const BankForm = ({ route, navigation }) => {
 				{incomplete.currency && (
 					<Text style={STYLES.incompleteInput}>Campo Requerido</Text>
 				)}
-				<TextInput
-					placeholder="Monto inicial"
-					style={STYLES.textInput}
-					maxLength={10}
-					selectionColor={COLORS.primary}
-					value={ammount}
-					keyboardType="numeric"
-					onChangeText={(newAmmount) => setAmmount(newAmmount)}
-				/>
+				<View
+					style={{
+						...STYLES.row,
+						justifyContent: "flex-start",
+						flex: 1,
+					}}
+				>
+					<Text style={{ ...STYLES.textInput }}>$</Text>
+					<TextInput
+						placeholder="Monto inicial"
+						style={{ ...STYLES.textInput, flexGrow: 1 }}
+						maxLength={10}
+						selectionColor={COLORS.primary}
+						value={ammount}
+						keyboardType="numeric"
+						onChangeText={(newAmmount) => setAmmount(newAmmount)}
+					/>
+				</View>
 				<Pressable
 					style={STYLES.pickerInput}
 					onPress={() => pickerCategory.current.focus()}

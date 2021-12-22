@@ -35,7 +35,7 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 					<Text
 						style={{
 							...STYLES.bigText,
-							marginBottom: operationInfo.type === -1 ? 0 : -3,
+							marginBottom: 0,
 						}}
 					>
 						{operationInfo.title}
@@ -48,10 +48,11 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 								...(operationInfo.title?.length
 									? STYLES.normalText
 									: STYLES.bigText),
-								marginBottom: -2,
+								marginBottom: 2,
 							}}
 						>
-							{(operationInfo.type === 4 || operationInfo.type === 5) &&
+							{operationInfo.type !== 0 &&
+								operationInfo.type !== 1 &&
 								"Categoria "}
 							{OPERATIONS_TYPES[operationInfo.type]}
 						</Text>
@@ -61,49 +62,59 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 					</View>
 				)}
 			</View>
-			{(operationInfo.type === 1 || operationInfo.type === 3) && (
-				<View style={{ alignItems: "flex-end", alignSelf: "flex-start" }}>
-					<Text
-						style={{ ...STYLES.bigText, fontWeight: "bold", marginBottom: -5 }}
-					>
-						{operationInfo.type === 1
-							? operationInfo.initialAmmount
-							: "-" + operationInfo.finalAmmount}{" "}
-						{operationInfo.currencyName}
-					</Text>
-					<Text style={{ ...STYLES.normalText }}>
-						{operationInfo.accountName}
-					</Text>
-				</View>
-			)}
-			{(operationInfo.type === 2 || operationInfo.type === 4) && (
-				<View style={{ alignItems: "flex-end", alignSelf: "flex-start" }}>
-					<Text
-						style={{
-							...STYLES.bigText,
-							fontWeight: "bold",
-							marginBottom: -5,
-						}}
-					>
-						{operationInfo.sendTo.ammount} {operationInfo.sendTo.currency}
-					</Text>
-					<Text style={{ ...STYLES.normalText, marginBottom: 5 }}>
-						{operationInfo.sendTo.name}
-					</Text>
-				</View>
-			)}
-			{(operationInfo.type === 2 || operationInfo.type === 5) && (
-				<View style={{ alignItems: "flex-end", alignSelf: "flex-start" }}>
-					<Text
-						style={{ ...STYLES.bigText, fontWeight: "bold", marginBottom: -5 }}
-					>
-						-{operationInfo.from.ammount} {operationInfo.from.currency}
-					</Text>
-					<Text style={{ ...STYLES.normalText }}>
-						{operationInfo.from.name}
-					</Text>
-				</View>
-			)}
+			<View style={{ alignItems: "flex-end", alignSelf: "flex-start" }}>
+				{(operationInfo.type === 1 || operationInfo.type === 3) && (
+					<View style={{ alignItems: "flex-end" }}>
+						<Text
+							style={{
+								...STYLES.bigText,
+								fontWeight: "bold",
+								marginBottom: -5,
+							}}
+						>
+							{operationInfo.type === 1
+								? operationInfo.initialAmmount
+								: "-" + operationInfo.finalAmmount}{" "}
+							{operationInfo.currencyName}
+						</Text>
+						<Text style={{ ...STYLES.normalText }}>
+							{operationInfo.accountName}
+						</Text>
+					</View>
+				)}
+				{(operationInfo.type === 2 || operationInfo.type === 4) && (
+					<View style={{ alignItems: "flex-end" }}>
+						<Text
+							style={{
+								...STYLES.bigText,
+								fontWeight: "bold",
+								marginBottom: -5,
+							}}
+						>
+							{operationInfo.sendTo.ammount} {operationInfo.sendTo.currency}
+						</Text>
+						<Text style={{ ...STYLES.normalText, marginBottom: 5 }}>
+							{operationInfo.sendTo.name}
+						</Text>
+					</View>
+				)}
+				{(operationInfo.type === 2 || operationInfo.type === 5) && (
+					<View style={{ alignItems: "flex-end" }}>
+						<Text
+							style={{
+								...STYLES.bigText,
+								fontWeight: "bold",
+								marginBottom: -5,
+							}}
+						>
+							-{operationInfo.from.ammount} {operationInfo.from.currency}
+						</Text>
+						<Text style={{ ...STYLES.normalText }}>
+							{operationInfo.from.name}
+						</Text>
+					</View>
+				)}
+			</View>
 		</TouchableOpacity>
 	);
 };

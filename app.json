@@ -1,27 +1,34 @@
 {
 	"expo": {
-		"name": "esencial",
+		"name": "Esencial",
 		"slug": "esencial",
 		"version": "1.0.0",
 		"orientation": "portrait",
 		"icon": "./assets/icon.png",
+		"primaryColor": "#1976D2",
 		"splash": {
 			"image": "./assets/splash.png",
 			"resizeMode": "contain",
 			"backgroundColor": "#ffffff"
 		},
+		"platforms": ["ios", "android"],
 		"updates": {
 			"fallbackToCacheTimeout": 0
 		},
 		"assetBundlePatterns": ["**/*"],
 		"ios": {
+			"bundleIdentifier": "com.esencial.esencial",
+			"buildNumber": "1.0.0",
 			"supportsTablet": true
 		},
 		"android": {
+			"package": "com.esencial.esencial",
+			"versionCode": 1,
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/adaptive-icon.png",
 				"backgroundColor": "#FFFFFF"
-			}
+			},
+			"permissions": ["CAMERA", "WRITE_EXTERNAL_STORAGE"]
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"
@@ -30,7 +37,7 @@
 			[
 				"expo-image-picker",
 				{
-					"cameraPermission": "La app Esencial solicita utilizar la camara."
+					"cameraPermission": "Permiso para utilizar la camara."
 				}
 			]
 		]

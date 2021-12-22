@@ -57,20 +57,22 @@ export const OperationDetails = ({ route }) => {
 						{":  - "}
 						{operation.from.ammount} {operation.from.currency}
 					</Text>
-					<ImageSelector
-						updateImage={(newValue) =>
-							dispatch(
-								updateOperation(
-									userId,
-									operation.creationDate,
-									"photo",
-									newValue
+					{operation.type === 5 && (
+						<ImageSelector
+							updateImage={(newValue) =>
+								dispatch(
+									updateOperation(
+										userId,
+										operation.creationDate,
+										"photo",
+										newValue
+									)
 								)
-							)
-						}
-						details={true}
-						storedPhoto={operation.photo ? operation.photo : ""}
-					/>
+							}
+							details={true}
+							storedPhoto={operation.photo ? operation.photo : ""}
+						/>
+					)}
 				</View>
 			)}
 			{(operation.type === 1 || operation.type === 3) && (

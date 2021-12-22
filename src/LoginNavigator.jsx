@@ -9,6 +9,7 @@ import {
 	SafeAreaView,
 	ActivityIndicator,
 	View,
+	Image,
 } from "react-native";
 import { STYLES } from "../constants/styles";
 import { COLORS } from "../constants/colors";
@@ -18,6 +19,8 @@ import * as Google from "expo-google-app-auth";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../store/actions/user.action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import loginBackgroundImg from "../assets/login-background.png";
+import { borderColor } from "react-native/Libraries/Components/View/ReactNativeStyleAttributes";
 
 const LoginScreen = () => {
 	const dispatch = useDispatch();
@@ -75,15 +78,35 @@ const LoginScreen = () => {
 	};
 
 	return (
-		<View forceInset="top" style={{ flex: 1 }}>
+		<View forceInset="top" style={{ flex: 1, justifyContent: "flex-end" }}>
+			<View
+				style={{
+					flex: 1,
+					maxWidth: "100%",
+					backgroundColor: COLORS.backgroundScreen,
+					marginBottom: -30,
+					marginLeft: -1,
+				}}
+			>
+				<Image
+					source={loginBackgroundImg}
+					style={{
+						resizeMode: "contain",
+						width: "120%",
+						alignSelf: "center",
+						maxHeight: "100%",
+					}}
+				/>
+			</View>
 			<SafeAreaView
 				style={{
 					...STYLES.screenContainer,
 					alignItems: "center",
-					position: "absolute",
-					bottom: 0,
+					minHeight: 0,
+					backgroundColor: "#fff",
+					maxHeight: 400,
 					paddingBottom: 25,
-					elevation: 10,
+					elevation: 15,
 				}}
 			>
 				<Text style={styles.esencial}>ESENCIAL</Text>
@@ -133,7 +156,7 @@ const styles = StyleSheet.create({
 		lineHeight: 30,
 		color: "rgba(0,0,0,0.65)",
 		textAlign: "center",
-		marginBottom: 60,
+		marginBottom: 50,
 	},
 	message: {
 		fontSize: 12,

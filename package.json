@@ -18,7 +18,6 @@
     "expo": "~43.0.2",
     "expo-app-loading": "~1.2.1",
     "expo-file-system": "~13.0.3",
-    "expo-font": "^10.0.3",
     "expo-google-app-auth": "~9.0.0",
     "expo-image-picker": "~11.0.3",
     "expo-linear-gradient": "~10.0.3",

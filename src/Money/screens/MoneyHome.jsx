@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Pressable, Text, ScrollView, View } from "react-native";
+import { Pressable, Text, ScrollView, View, SafeAreaView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { STYLES } from "../../../constants/styles";
@@ -20,7 +20,7 @@ export const MoneyHome = ({ navigation }) => {
 	}, [user]);
 
 	return (
-		<View style={{ width: "100%" }}>
+		<SafeAreaView>
 			<ScrollView style={STYLES.screenContainer}>
 				<View style={{ marginBottom: 120 }}>
 					{/* Cuentas de uso diario */}
@@ -67,6 +67,6 @@ export const MoneyHome = ({ navigation }) => {
 					<Text style={STYLES.btnPrimaryText}>Realizar operación</Text>
 				</Pressable>
 			</LinearGradient>
-		</View>
+		</SafeAreaView>
 	);
 };
