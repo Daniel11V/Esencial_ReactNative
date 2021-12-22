@@ -1,5 +1,4 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
-
 import { STYLES } from "../../../../constants/styles";
 import { BANKS_INFO } from "../../../../constants/bankConstants";
 import React from "react";

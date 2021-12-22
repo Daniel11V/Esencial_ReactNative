@@ -1,4 +1,4 @@
-import { ADD_ACCOUNT, ADD_BANK, DELETE_ACCOUNT, DELETE_BANK, END_LOADING, SET_BANKS, UPDATE_ACCOUNT, ADD_OPERATION, DELETE_OPERATION, SET_OPERATIONS } from "../actions/money.action"
+import { ADD_ACCOUNT, ADD_BANK, DELETE_ACCOUNT, DELETE_BANK, END_LOADING, SET_BANKS, UPDATE_ACCOUNT, ADD_OPERATION, DELETE_OPERATION, SET_OPERATIONS, UPDATE_OPERATION } from "../actions/money.action"
 
 const initialState = {
     banks: {},
@@ -50,6 +50,10 @@ const MoneyReducer = (state = initialState, { type, payload }) => {
             return { ...state, operations: { ...payload.operationsUpdated } }
         case ADD_OPERATION:
             return { ...state, operations: { ...state.operations, [payload.operationInfo.creationDate]: payload.operationInfo } }
+        case UPDATE_OPERATION:
+            let updateOperationState = JSON.parse(JSON.stringify(state.operations))
+            updateOperationState[payload.operationId][payload.key] = payload.newValue
+            return { ...state, operations: { ...updateOperationState } }
         case DELETE_OPERATION:
             let deleteOperationState = JSON.parse(JSON.stringify(state.operations))
             delete deleteOperationState[payload.operationId]

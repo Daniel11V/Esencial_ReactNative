@@ -1,8 +1,6 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS } from "../../../../constants/colors";
+import { Text, TouchableOpacity, View } from "react-native";
 import { OPERATIONS_TYPES } from "../../../../constants/operationConstants";
-
 import { STYLES } from "../../../../constants/styles";
 
 export const OperationItem = ({ operationInfo, handleClickOperation }) => {
@@ -34,24 +32,40 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 				}}
 			>
 				{!!operationInfo.title?.length && (
-					<Text style={STYLES.bigText}>{operationInfo.title}</Text>
+					<Text
+						style={{
+							...STYLES.bigText,
+							marginBottom: operationInfo.type === -1 ? 0 : -3,
+						}}
+					>
+						{operationInfo.title}
+					</Text>
 				)}
 				{operationInfo.type !== -1 && (
 					<View>
 						<Text
-							style={
-								operationInfo.title?.length ? STYLES.normalText : STYLES.bigText
-							}
+							style={{
+								...(operationInfo.title?.length
+									? STYLES.normalText
+									: STYLES.bigText),
+								marginBottom: -2,
+							}}
 						>
+							{(operationInfo.type === 4 || operationInfo.type === 5) &&
+								"Categoria "}
 							{OPERATIONS_TYPES[operationInfo.type]}
 						</Text>
-						<Text style={STYLES.normalText}>{completeDate}</Text>
+						<Text style={{ ...STYLES.normalText, fontSize: 13 }}>
+							{completeDate}
+						</Text>
 					</View>
 				)}
 			</View>
 			{(operationInfo.type === 1 || operationInfo.type === 3) && (
-				<View style={{ alignItems: "flex-end" }}>
-					<Text style={{ ...STYLES.bigText, fontWeight: "bold" }}>
+				<View style={{ alignItems: "flex-end", alignSelf: "flex-start" }}>
+					<Text
+						style={{ ...STYLES.bigText, fontWeight: "bold", marginBottom: -5 }}
+					>
 						{operationInfo.type === 1
 							? operationInfo.initialAmmount
 							: "-" + operationInfo.finalAmmount}{" "}
@@ -62,8 +76,8 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 					</Text>
 				</View>
 			)}
-			{operationInfo.type === 2 && (
-				<View style={{ alignItems: "flex-end" }}>
+			{(operationInfo.type === 2 || operationInfo.type === 4) && (
+				<View style={{ alignItems: "flex-end", alignSelf: "flex-start" }}>
 					<Text
 						style={{
 							...STYLES.bigText,
@@ -76,6 +90,10 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 					<Text style={{ ...STYLES.normalText, marginBottom: 5 }}>
 						{operationInfo.sendTo.name}
 					</Text>
+				</View>
+			)}
+			{(operationInfo.type === 2 || operationInfo.type === 5) && (
+				<View style={{ alignItems: "flex-end", alignSelf: "flex-start" }}>
 					<Text
 						style={{ ...STYLES.bigText, fontWeight: "bold", marginBottom: -5 }}
 					>
@@ -89,13 +107,3 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 		</TouchableOpacity>
 	);
 };
-
-const styles = StyleSheet.create({
-	accountItemCategory: {
-		paddingBottom: 2,
-		paddingHorizontal: 8,
-		borderRadius: 5,
-		// width: 140,
-		// alignItems: "center",
-	},
-});

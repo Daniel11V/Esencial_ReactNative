@@ -27,14 +27,22 @@ export const OperationList = ({
 						) {
 							return true;
 						}
-					} else if (oper.type === 2) {
-						if (
-							(!oper.from.name.localeCompare(filter.bank) &&
-								!oper.from.currency.localeCompare(filter.account)) ||
-							(!oper.sendTo.name.localeCompare(filter.bank) &&
-								!oper.sendTo.currency.localeCompare(filter.account))
-						) {
-							return true;
+					} else {
+						if (oper.type === 2 || oper.type === 4) {
+							if (
+								!oper.sendTo.name.localeCompare(filter.bank) &&
+								!oper.sendTo.currency.localeCompare(filter.account)
+							) {
+								return true;
+							}
+						}
+						if (oper.type === 2 || oper.type === 5) {
+							if (
+								!oper.from.name.localeCompare(filter.bank) &&
+								!oper.from.currency.localeCompare(filter.account)
+							) {
+								return true;
+							}
 						}
 					}
 

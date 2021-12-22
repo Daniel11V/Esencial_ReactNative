@@ -27,6 +27,7 @@ export const BankForm = ({ route, navigation }) => {
 	const { insideBank, isNewCurrency } = route.params;
 
 	const dispatch = useDispatch();
+	const userId = useSelector((state) => state.user.id);
 	const bank = useSelector((state) => state.money.banks[insideBank]);
 	const possibleBanks = useSelector((state) =>
 		BANKS_INFO.filter(
@@ -72,7 +73,7 @@ export const BankForm = ({ route, navigation }) => {
 					: currency.toUpperCase();
 
 			dispatch(
-				addOperation({
+				addOperation(userId, {
 					type: 1,
 					creationDate: Date.now(),
 					accountName: newName,
@@ -83,7 +84,7 @@ export const BankForm = ({ route, navigation }) => {
 
 			if (isNewCurrency) {
 				dispatch(
-					addAccount(bank.name, {
+					addAccount(userId, bank.name, {
 						currency: newCurrency,
 						ammount: ammount ? Number(ammount) : 0,
 						category: category.length ? category : "uso diario",
@@ -96,7 +97,7 @@ export const BankForm = ({ route, navigation }) => {
 				});
 			} else {
 				dispatch(
-					addBank({
+					addBank(userId, {
 						name: newName,
 						creationDate: Date.now(),
 						accounts: {

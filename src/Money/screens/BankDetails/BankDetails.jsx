@@ -1,4 +1,12 @@
-import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
+import {
+	Alert,
+	Animated,
+	Image,
+	Pressable,
+	ScrollView,
+	Text,
+	View,
+} from "react-native";
 import React, { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Picker } from "@react-native-picker/picker";
@@ -25,6 +33,7 @@ export const BankDetails = ({ route, navigation }) => {
 	const { bankName, hasNewCurrency } = route.params;
 
 	const dispatch = useDispatch();
+	const userId = useSelector((state) => state.user.id);
 	const bank = useSelector((state) => state.money.banks[bankName]);
 
 	const [selectedAccount, setSelectedAccount] = useState(() =>
@@ -35,12 +44,12 @@ export const BankDetails = ({ route, navigation }) => {
 	const pickerCategory = useRef();
 
 	useEffect(() => {
-		hasNewCurrency && setSelectedAccount(hasNewCurrency);
+		hasNewCurrency && changeSelectedAccount(hasNewCurrency);
 	}, [hasNewCurrency]);
 
 	const onDelete = () => {
 		dispatch(
-			addOperation({
+			addOperation(userId, {
 				type: 3,
 				creationDate: Date.now(),
 				accountName: bank.name,
@@ -50,13 +59,17 @@ export const BankDetails = ({ route, navigation }) => {
 		);
 		if (Object.keys(bank.accounts).length === 1) {
 			navigation.goBack();
-			dispatch(deleteBank(bank.name));
+			dispatch(deleteBank(userId, bank.name));
 		} else {
 			dispatch(
-				deleteAccount(bank.name, bank.accounts[selectedAccount]?.currency)
+				deleteAccount(
+					userId,
+					bank.name,
+					bank.accounts[selectedAccount]?.currency
+				)
 			);
 			const accountsNames = Object.keys(bank.accounts);
-			setSelectedAccount(
+			changeSelectedAccount(
 				selectedAccount === accountsNames[0]
 					? accountsNames[1]
 					: accountsNames[0]
@@ -73,6 +86,24 @@ export const BankDetails = ({ route, navigation }) => {
 				{ text: "Confirmar", onPress: onDelete },
 			]
 		);
+	};
+
+	const opacDetails = useRef(new Animated.Value(1)).current;
+
+	const changeSelectedAccount = (newValue) => {
+		Animated.timing(opacDetails, {
+			toValue: 0,
+			duration: 100,
+			useNativeDriver: true,
+		}).start(() => {
+			setSelectedAccount(newValue);
+
+			Animated.timing(opacDetails, {
+				toValue: 1,
+				duration: 200,
+				useNativeDriver: true,
+			}).start();
+		});
 	};
 
 	return (
@@ -108,7 +139,7 @@ export const BankDetails = ({ route, navigation }) => {
 				{orderByDate(Object.values(bank.accounts)).map((account, key) => (
 					<Pressable
 						key={key}
-						onPress={() => setSelectedAccount(account.currency)}
+						onPress={() => changeSelectedAccount(account.currency)}
 						style={{
 							...(bank.accounts[selectedAccount]?.currency == account.currency
 								? STYLES.btnSecondaryMiddle
@@ -141,58 +172,60 @@ export const BankDetails = ({ route, navigation }) => {
 				))}
 			</View>
 			<Text style={STYLES.subtitle}>Detalles</Text>
-			<View style={STYLES.row}>
-				<Text style={STYLES.normalText}>
-					Cuenta de {bank.accounts[selectedAccount]?.category}
-				</Text>
-				<View>
-					<Pressable onPress={() => pickerCategory.current.focus()}>
-						<Text style={STYLES.btnThirdText}>Cambiar</Text>
-					</Pressable>
-					<Picker
-						selectedValue={bank.accounts[selectedAccount]?.category}
-						onValueChange={(newValue) =>
-							dispatch(
-								updateAccount(
-									bank.name,
-									bank.accounts[selectedAccount]?.currency,
-									"category",
-									newValue
+			<Animated.View style={{ opacity: opacDetails }}>
+				<View style={STYLES.row}>
+					<Text style={STYLES.normalText}>
+						Cuenta de {bank.accounts[selectedAccount]?.category}
+					</Text>
+					<View>
+						<Pressable onPress={() => pickerCategory.current.focus()}>
+							<Text style={STYLES.btnThirdText}>Cambiar</Text>
+						</Pressable>
+						<Picker
+							selectedValue={bank.accounts[selectedAccount]?.category}
+							onValueChange={(newValue) =>
+								dispatch(
+									updateAccount(
+										userId,
+										bank.name,
+										bank.accounts[selectedAccount]?.currency,
+										"category",
+										newValue
+									)
 								)
-							)
-						}
-						ref={pickerCategory}
-						style={STYLES.invisible}
-						prompt="Tipo de cuenta"
-					>
-						{ACCOUNTS_CATEGORIES.map((categoryName, key) => (
-							<Picker.Item
-								key={key}
-								label={`   Cuenta de ${categoryName}`}
-								value={categoryName}
-								style={{
-									...STYLES.bigText,
-									backgroundColor:
-										categoryName === bank.accounts[selectedAccount]?.category
-											? COLORS.tinyGray
-											: "#fff",
-								}}
-							/>
-						))}
-					</Picker>
+							}
+							ref={pickerCategory}
+							style={STYLES.invisible}
+							prompt="Tipo de cuenta"
+						>
+							{ACCOUNTS_CATEGORIES.map((categoryName, key) => (
+								<Picker.Item
+									key={key}
+									label={`   Cuenta de ${categoryName}`}
+									value={categoryName}
+									style={{
+										...STYLES.bigText,
+										backgroundColor:
+											categoryName === bank.accounts[selectedAccount]?.category
+												? COLORS.tinyGray
+												: "#fff",
+									}}
+								/>
+							))}
+						</Picker>
+					</View>
 				</View>
-			</View>
-			{/* Operaciones */}
-			{/* <View style={{ marginBottom: 50 }}> */}
-			<Text style={{ ...STYLES.subtitle, marginBottom: 0 }}>Operaciones</Text>
-			<OperationList
-				handleClickOperation={(operationId) =>
-					navigation.push("OperationDetails", { operationId })
-				}
-				filter={{ bank: bankName, account: selectedAccount }}
-				verticalSpace={true}
-			/>
-			{/* </View> */}
+				{/* Operaciones */}
+				{/* <View style={{ marginBottom: 50 }}> */}
+				<Text style={{ ...STYLES.subtitle, marginBottom: 0 }}>Operaciones</Text>
+				<OperationList
+					handleClickOperation={(operationId) =>
+						navigation.push("OperationDetails", { operationId })
+					}
+					filter={{ bank: bankName, account: selectedAccount }}
+					verticalSpace={true}
+				/>
+			</Animated.View>
 		</ScrollView>
 	);
 };

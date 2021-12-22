@@ -5,19 +5,19 @@ import { LinearGradient } from "expo-linear-gradient";
 import { STYLES } from "../../../constants/styles";
 import { BankList } from "../components/BankList/BankList";
 
+import { useDispatch, useSelector } from "react-redux";
 import { getFirstView } from "../../../store/actions/money.action";
-import { useDispatch } from "react-redux";
 import { OperationList } from "../components/OperationList/OperationList";
 
 export const MoneyHome = ({ navigation }) => {
 	const dispatch = useDispatch();
+	const user = useSelector((state) => state.user);
 
 	useEffect(() => {
-		dispatch(getFirstView());
-		console.log("Fetching");
-		//dispatch(getBanks());
-		//dispatch(getOperations());
-	}, []);
+		if (user.id?.length) {
+			dispatch(getFirstView(user.id));
+		}
+	}, [user]);
 
 	return (
 		<View style={{ width: "100%" }}>

@@ -36,13 +36,34 @@ export const OPERATIONS_DEFAULT = {
         currencyName: 'ARS',
         finalAmmount: 0
     }
+    [Date.now()]: {
+        type: 4,
+        title: "",
+        creationDate: Date.now(),
+        sendTo: {
+            name: 'Efectivo',
+            currency: 'ARS',
+            ammount: 0
+        },
+    },
+    [Date.now()]: {
+        type: 5,
+        title: "",
+        creationDate: Date.now(),
+        photo: '',
+        from: {
+            name: 'Efectivo',
+            currency: 'ARS',
+            ammount: 0
+        },
+    },
 */
 
 export const OPERATIONS_TYPES = [
-    'Inicio de registros',
-    'Creacion de cuenta',
-    'Movimiento',
-    'Cierre de cuenta',
-    'Ingreso',
-    'Pago',
+    'Inicio de registros', //0
+    'Creacion de cuenta',  //1
+    'Movimiento',          //2
+    'Cierre de cuenta',    //3
+    'Ingreso',             //4
+    'Pago',                //5
 ]

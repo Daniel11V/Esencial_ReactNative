@@ -152,8 +152,7 @@ export const STYLES = StyleSheet.create({
     actionBoxFixed: {
         position: 'absolute',
         bottom: 0,
-        height: 100,
-        paddingTop: 25,
+        height: 75,
         width: '100%',
         alignItems: 'center',
         borderBottomWidth: 2,
