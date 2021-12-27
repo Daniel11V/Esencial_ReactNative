@@ -56,8 +56,8 @@ export const TabNavigator = () => {
 			<Tab.Screen name="Money" component={MoneyNavigator} />
 			{/* <Tab.Screen name="Food" component={FoodNavigator} />
 			<Tab.Screen name="Health" component={HealthNavigator} />
+		<Tab.Screen name="Files" component={FilesNavigator} /> */}
 			<Tab.Screen name="Watch" component={WatchNavigator} />
-			<Tab.Screen name="Files" component={FilesNavigator} /> */}
 			<Tab.Screen name="User" component={UserNavigator} />
 		</Tab.Navigator>
 	);
