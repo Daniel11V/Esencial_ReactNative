@@ -6,6 +6,7 @@ import { COLORS } from "../../../constants/colors";
 import { STYLES } from "../../../constants/styles";
 import { logout } from "../../../store/actions/user.action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as GoogleSignIn from "expo-google-sign-in";
 
 export const UserHome = () => {
 	const user = useSelector((state) => state.user);
@@ -15,6 +16,7 @@ export const UserHome = () => {
 		AsyncStorage.removeItem("esencialCredentials")
 			.then(() => {
 				dispatch(logout());
+				GoogleSignIn.signOutAsync();
 			})
 			.catch((error) => console.log(error));
 	};

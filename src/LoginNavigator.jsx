@@ -15,12 +15,12 @@ import { STYLES } from "../constants/styles";
 import { COLORS } from "../constants/colors";
 import { StatusBar } from "expo-status-bar";
 
-import * as Google from "expo-google-app-auth";
+// import * as Google from "expo-google-app-auth";
+import * as GoogleSignIn from "expo-google-sign-in";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../store/actions/user.action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import loginBackgroundImg from "../assets/login-background.png";
-import { borderColor } from "react-native/Libraries/Components/View/ReactNativeStyleAttributes";
 
 const LoginScreen = () => {
 	const dispatch = useDispatch();
@@ -28,41 +28,91 @@ const LoginScreen = () => {
 	const [message, setMessage] = useState("");
 	const [messageType, setMessageType] = useState("");
 
-	const handleMessage = (message, type = "FAILED") => {
-		setMessage(message);
-		setMessageType(type);
-	};
-
-	const handleGoogleSignin = () => {
-		setGoogleLoading(true);
+	useEffect(() => {
+		let isMounted = true;
 
 		const config = {
 			androidClientId:
 				"630395241807-0jfj7kdh37518rl8rer30n26tv6e0kg9.apps.googleusercontent.com",
 			iosClientId:
 				"630395241807-5a798la0t7ot29iqqbhk6hd8mgb0qlev.apps.googleusercontent.com",
+			androidStandaloneAppClientId:
+				"630395241807-m9q2h9vb4pntte8orbgm6qt373p6pnj8.apps.googleusercontent.com",
+			clientId:
+				"630395241807-m9q2h9vb4pntte8orbgm6qt373p6pnj8.apps.googleusercontent.com",
 			scopes: ["profile", "email"],
 		};
 
-		Google.logInAsync(config)
-			.then((result) => {
-				const { type, user } = result;
-				if (type == "success") {
-					const { id, email, name, photoUrl } = user;
-					handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
-					persistLogin({ id, email, name, photoUrl }, message, "SUCCESS");
-				} else {
-					handleMessage("Inicio de sesion cancelado.");
-				}
-				setGoogleLoading(false);
-			})
-			.catch((error) => {
-				console.log(error);
-				handleMessage(
-					"Ocurrio un error. Comprueba tu conexión a internet e intenta de nuevo."
-				);
-				setGoogleLoading(false);
-			});
+		GoogleSignIn.initAsync(config);
+
+		return () => {
+			isMounted = false;
+		};
+	}, []);
+
+	const handleMessage = (message, type = "FAILED") => {
+		setMessage(message);
+		setMessageType(type);
+	};
+
+	syncUserWithStateAsync = async () => {
+		const user = await GoogleSignIn.signInSilentlyAsync();
+		if (user) {
+			const { uid, email, displayName, photoURL, auth } = user;
+			persistLogin(
+				{
+					id: uid,
+					token: auth.accessToken,
+					email,
+					name: displayName,
+					photoUrl: photoURL,
+				},
+				message,
+				"SUCCESS"
+			);
+		}
+	};
+
+	const handleGoogleSignIn = async () => {
+		setGoogleLoading(true);
+
+		try {
+			await GoogleSignIn.askForPlayServicesAsync();
+			const { type, user } = await GoogleSignIn.signInAsync();
+			if (type === "success") {
+				handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
+				syncUserWithStateAsync();
+			} else {
+				handleMessage("Inicio de sesion cancelado.");
+			}
+			setGoogleLoading(false);
+		} catch (error) {
+			console.log(error);
+			handleMessage(
+				"Ocurrio un error. Comprueba tu conexión a internet e intenta de nuevo."
+			);
+			setGoogleLoading(false);
+		}
+
+		// Google.logInAsync(config)
+		// 	.then((result) => {
+		// 		const { type, user } = result;
+		// 		if (type == "success") {
+		// 			const { id, email, name, photoUrl } = user;
+		// 			handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
+		// 			persistLogin({ id, email, name, photoUrl }, message, "SUCCESS");
+		// 		} else {
+		// 			handleMessage("Inicio de sesion cancelado.");
+		// 		}
+		// 		setGoogleLoading(false);
+		// 	})
+		// 	.catch((error) => {
+		// 		console.log(error);
+		// 		handleMessage(
+		// 			"Ocurrio un error. Comprueba tu conexión a internet e intenta de nuevo."
+		// 		);
+		// 		setGoogleLoading(false);
+		// 	});
 	};
 
 	const persistLogin = (credentials, message, status) => {
@@ -124,7 +174,7 @@ const LoginScreen = () => {
 				>
 					{message}
 				</Text>
-				<Pressable onPress={() => handleGoogleSignin()} style={styles.logBtn}>
+				<Pressable onPress={() => handleGoogleSignIn()} style={styles.logBtn}>
 					{googleLoading ? (
 						<ActivityIndicator
 							size="large"
@@ -185,7 +235,7 @@ const styles = StyleSheet.create({
 
 export const LoginNavigator = ({ asyncData }) => {
 	const dispatch = useDispatch();
-	const user = useSelector((state) => state.user);
+	const { user } = useSelector((state) => state);
 	const Stack = createNativeStackNavigator();
 
 	useEffect(() => {
