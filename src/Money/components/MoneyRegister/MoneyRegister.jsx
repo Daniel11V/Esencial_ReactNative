@@ -130,9 +130,7 @@ export const MoneyRegister = () => {
 				}}
 				onPress={() => pickerRegister.current.focus()}
 			>
-				<Text
-					style={{ ...STYLES.bigTitle, marginRight: 5, color: COLORS.primary }}
-				>
+				<Text style={{ ...STYLES.bigTitle, marginRight: 5 }}>
 					{currentRegister.name.length ? currentRegister.name : "Cargando..."}
 				</Text>
 				<MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
