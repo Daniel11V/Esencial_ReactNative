@@ -1,10 +1,19 @@
-import { child, ref, get, set, remove } from "firebase/database";
+import { child, ref, get, set, remove, push, limitToLast, query, equalTo, onValue, orderByChild } from "firebase/database";
 import { db } from "../../database/firebase"
 import { BANKS_DEFAULT } from "../../constants/bankConstants"
 import { OPERATIONS_DEFAULT } from "../../constants/operationConstants";
 import * as FileSystem from 'expo-file-system'
 
 export const END_LOADING = 'END_LOADING'
+
+export const SET_MONEY_PERS_REGISTER_ID = 'SET_MONEY_PERS_REGISTER_ID'
+export const SET_MONEY_REGISTERS_ID = 'SET_MONEY_REGISTERS_ID'
+export const SET_MONEY_REGISTER = 'SET_MONEY_REGISTER'
+export const CREATE_MONEY_REGISTER = 'CREATE_MONEY_REGISTER'
+export const ADD_MONEY_REGISTER = 'ADD_MONEY_REGISTER'
+
+export const SET_MONEY_NOTIFICATIONS = 'SET_MONEY_NOTIFICATIONS'
+export const DELETE_MONEY_NOTIFICATION = 'DELETE_MONEY_NOTIFICATION'
 
 export const SET_BANKS = 'SET_BANKS'
 export const ADD_BANK = 'ADD_BANK'
@@ -36,52 +45,228 @@ export const setOperations = (operationsUpdated) => ({
 
 // Thunks
 
-export const getFirstView = (userId) => {
+export const getPersonalRegisterFirstView = (user) => {
     return async dispatch => {
 
-        await get(child(ref(db), `users/${userId}/banks`)).then((snapshot) => {
-            if (snapshot.exists()) {
-                const banks = snapshot.val()
-                dispatch(setBanks(banks))
-            } else {
-                console.log("No data available");
+        try {
 
-                set(ref(db, `users/${userId}/banks`), { ...BANKS_DEFAULT })
-                dispatch(setBanks(BANKS_DEFAULT))
-            }
-        }).catch((error) => {
-            console.error(error);
-        });
+            // const moneyRegistersRef = query(ref(db, 'money-registers'), orderByChild('ownerId'), equalTo("8653738749034139"))
+            onValue(ref(db, `users/${user.id}/personalMoneyRegisterId`), (snapshot) => {
+                if (snapshot.exists()) {
+                    // snapshot.forEach((childSnapshot) => {
+                    //     const childKey = childSnapshot.key;
+                    //     const childData = childSnapshot.val();
+                    //     // ...
+                    // });
+                    const personalMoneyRegisterId = snapshot.val()
 
-        await get(child(ref(db), `users/${userId}/operations`)).then((snapshot) => {
-            if (snapshot.exists()) {
-                const operations = snapshot.val()
-                dispatch(setOperations(operations))
-            } else {
-                console.log("No data available");
+                    dispatch({
+                        type: SET_MONEY_PERS_REGISTER_ID,
+                        payload: { personalMoneyRegisterId }
+                    })
+                    dispatch(getAvailableMoneyRegisters(user))
+                    dispatch(getMoneyRegister(personalMoneyRegisterId))
+                } else {
+                    console.log("No data available (notifications) (personalMoneyRegisterId)");
 
-                set(ref(db, `users/${userId}/operations`), { ...OPERATIONS_DEFAULT })
-                dispatch(setOperations({ ...OPERATIONS_DEFAULT }))
-            }
-        }).catch((error) => {
-            console.error(error);
-        });
+                    dispatch(createMoneyRegister(user.name, user))
+                }
+
+                dispatch(checkNotifications(user.email))
+
+            }, {
+                onlyOnce: true
+            });
+
+        } catch (error) {
+            console.warn(error);
+        }
 
         dispatch(endLoading())
     }
 }
 
-export const getBanks = (userId) => {
+export const getAvailableMoneyRegisters = (user) => {
     return async dispatch => {
 
-        get(child(ref(db), `users/${userId}/banks`)).then((snapshot) => {
+        onValue(ref(db, `users/${user.id}/availableMoneyRegisters`), (snapshot) => {
+            if (snapshot.exists()) {
+
+                const moneyRegistersId = snapshot.val()
+
+                dispatch({
+                    type: SET_MONEY_REGISTERS_ID,
+                    payload: { moneyRegistersId }
+                })
+            } else {
+                console.log("No data available (notifications) (availableMoneyRegisters)");
+                dispatch({
+                    type: SET_MONEY_REGISTERS_ID,
+                    payload: { moneyRegistersId: {} }
+                })
+            }
+        }, { onlyOnce: true });
+    }
+}
+
+export const getMoneyRegister = (registerId) => {
+    return async dispatch => {
+
+        onValue(ref(db, `moneyRegisters/${registerId}`), (snapshot) => {
+            if (snapshot.exists()) {
+
+                const moneyRegister = snapshot.val()
+
+                dispatch({
+                    type: SET_MONEY_REGISTER,
+                    payload: { registerId, moneyRegister }
+                })
+            } else {
+                console.log("No data available (notifications) (moneyRegister)");
+            }
+        }, { onlyOnce: true });
+    }
+}
+
+export const createMoneyRegister = (newRegisterName, user) => {
+    return async dispatch => {
+
+        const newRegister = {
+            name: newRegisterName,
+            participants: {},
+            banks: { ...BANKS_DEFAULT },
+            operations: { ...OPERATIONS_DEFAULT },
+        }
+        const newRegisterRef = push(ref(db, `moneyRegisters`))
+        set(newRegisterRef, newRegister);
+        const newRegisterId = newRegisterRef.key
+
+        const newParticipant = { email: user.email, name: user.name, photoUrl: user.photoUrl, accessLevel: 0 }
+        const newParticipantRef = push(ref(db, `moneyRegisters/${newRegisterId}/participants`))
+        set(newParticipantRef, newParticipant);
+        const newParticipantId = newParticipantRef.key
+
+        const isPersonalRegister = (!newRegisterName.localeCompare(user.name))
+
+        if (isPersonalRegister) {
+            set(ref(db, `users/${user.id}/personalMoneyRegisterId`), newRegisterId);
+        } else {
+            set(ref(db, `users/${user.id}/availableMoneyRegisters/${newRegisterId}`), { id: newRegisterId, name: newRegisterName });
+        }
+
+        dispatch({
+            type: CREATE_MONEY_REGISTER,
+            payload: {
+                newRegister: {
+                    ...newRegister,
+                    participants: {
+                        [newParticipantId]: newParticipant
+                    }
+                }, newRegisterId, isPersonalRegister
+            }
+        })
+    }
+}
+
+export const addMoneyRegister = (newMoneyRegister, notificationId, user) => {
+    return async dispatch => {
+
+        set(ref(db, `users/${user.id}/availableMoneyRegisters/${newMoneyRegister.id}`), { id: newMoneyRegister.id, name: newMoneyRegister.name });
+
+        // Add participant to Money Register
+        const newParticipant = { email: user.email, name: user.name, photoUrl: user.photoUrl, accessLevel: newMoneyRegister.accessLevel }
+        const newParticipantRef = push(ref(db, `moneyRegisters/${newMoneyRegister.id}/participants`))
+        set(newParticipantRef, newParticipant);
+
+        dispatch({
+            type: ADD_MONEY_REGISTER,
+            payload: { newMoneyRegister }
+        })
+
+        dispatch(getMoneyRegister(newMoneyRegister.id))
+
+        dispatch(getMoneyRegister(newMoneyRegister.id))
+
+        dispatch(deleteMoneyNotification(notificationId));
+    }
+}
+
+export const checkNotifications = (userEmail) => {
+    return async dispatch => {
+
+        try {
+
+            // const moneyNotificationsRef = query(ref(db, 'moneyNotifications'), orderByChild('sendToEmail'), equalTo(userEmail))
+            onValue(ref(db, 'moneyNotifications'), (snapshot) => {
+                if (snapshot.exists()) {
+                    let updatedNotifications = {}
+
+                    snapshot.forEach((childSnapshot) => {
+                        const notification = childSnapshot.val();
+                        if (notification.sendToEmail.includes(userEmail)) {
+                            updatedNotifications[childSnapshot.key] = notification
+                        }
+
+                    });
+
+                    dispatch({
+                        type: SET_MONEY_NOTIFICATIONS,
+                        payload: { updatedNotifications }
+                    })
+                } else {
+                    console.log("No data available (notifications)");
+                }
+            }, {
+                onlyOnce: true
+            });
+
+        } catch (error) {
+            console.warn(error);
+        }
+    }
+}
+
+export const sendMoneyRegisterInvitation = (sendToEmail, registerId, registerName, registerAccessLevel, user) => {
+
+    const newInvitation = {
+        type: "Invitation to Money Register",
+        moneyRegister: {
+            id: registerId,
+            name: registerName,
+            accessLevel: registerAccessLevel,
+        },
+        sendToEmail,
+        from: {
+            name: user.name,
+            email: user.email,
+        }
+    }
+
+    set(push(ref(db, `moneyNotifications`)), newInvitation);
+}
+
+export const deleteMoneyNotification = (notificationId) => {
+    return async dispatch => {
+        remove(ref(db, `moneyNotifications/${notificationId}`));
+
+        dispatch({
+            type: DELETE_MONEY_NOTIFICATION,
+            payload: { notificationId }
+        })
+    }
+}
+
+export const getBanks = (registerId) => {
+    return async dispatch => {
+
+        get(child(ref(db), `moneyRegisters/${registerId}/banks`)).then((snapshot) => {
             if (snapshot.exists()) {
                 const banks = snapshot.val()
                 dispatch(setBanks(banks))
             } else {
                 console.log("No data available");
 
-                set(ref(db, `users/${userId}/banks`), { ...BANKS_DEFAULT })
+                set(ref(db, `moneyRegisters/${registerId}/banks`), { ...BANKS_DEFAULT })
                 dispatch(setBanks(BANKS_DEFAULT))
             }
         }).catch((error) => {
@@ -90,10 +275,10 @@ export const getBanks = (userId) => {
     }
 }
 
-export const addBank = (userId, bankInfo) => {
+export const addBank = (registerId, bankInfo) => {
     return async dispatch => {
 
-        set(ref(db, `users/${userId}/banks/${bankInfo.name}`), bankInfo);
+        set(ref(db, `moneyRegisters/${registerId}/banks/${bankInfo.name}`), bankInfo);
 
         dispatch({
             type: ADD_BANK,
@@ -102,10 +287,10 @@ export const addBank = (userId, bankInfo) => {
     }
 }
 
-export const addAccount = (userId, bankName, newAccount) => {
+export const addAccount = (registerId, bankName, newAccount) => {
     return async dispatch => {
 
-        set(ref(db, `users/${userId}/banks/${bankName}/accounts/${newAccount.currency}`), newAccount);
+        set(ref(db, `moneyRegisters/${registerId}/banks/${bankName}/accounts/${newAccount.currency}`), newAccount);
 
         dispatch({
             type: ADD_ACCOUNT,
@@ -114,10 +299,10 @@ export const addAccount = (userId, bankName, newAccount) => {
     }
 }
 
-export const updateAccount = (userId, bankName, currency, key, newValue) => {
+export const updateAccount = (registerId, bankName, currency, key, newValue) => {
     return async dispatch => {
 
-        set(ref(db, `users/${userId}/banks/${bankName}/accounts/${currency}/${key}`), newValue);
+        set(ref(db, `moneyRegisters/${registerId}/banks/${bankName}/accounts/${currency}/${key}`), newValue);
 
         dispatch({
             type: UPDATE_ACCOUNT,
@@ -126,9 +311,9 @@ export const updateAccount = (userId, bankName, currency, key, newValue) => {
     }
 }
 
-export const deleteBank = (userId, bankName) => {
+export const deleteBank = (registerId, bankName) => {
     return async dispatch => {
-        remove(ref(db, `users/${userId}/banks/${bankName}`));
+        remove(ref(db, `moneyRegisters/${registerId}/banks/${bankName}`));
 
         dispatch({
             type: DELETE_BANK,
@@ -137,9 +322,9 @@ export const deleteBank = (userId, bankName) => {
     }
 }
 
-export const deleteAccount = (userId, bankName, accountName) => {
+export const deleteAccount = (registerId, bankName, accountName) => {
     return async dispatch => {
-        remove(ref(db, `users/${userId}/banks/${bankName}/accounts/${accountName}`));
+        remove(ref(db, `moneyRegisters/${registerId}/banks/${bankName}/accounts/${accountName}`));
 
         dispatch({
             type: DELETE_ACCOUNT,
@@ -148,17 +333,17 @@ export const deleteAccount = (userId, bankName, accountName) => {
     }
 }
 
-export const getOperations = (userId) => {
+export const getOperations = (registerId) => {
     return async dispatch => {
 
-        get(child(ref(db), `users/${userId}/operations`)).then((snapshot) => {
+        get(child(ref(db), `moneyRegisters/${registerId}/operations`)).then((snapshot) => {
             if (snapshot.exists()) {
                 const operations = snapshot.val()
                 dispatch(setOperations(operations))
             } else {
                 console.log("No data available");
 
-                set(ref(db, `users/${userId}/operations`), { ...OPERATIONS_DEFAULT })
+                set(ref(db, `moneyRegisters/${registerId}/operations`), { ...OPERATIONS_DEFAULT })
                 dispatch(setOperations({ ...OPERATIONS_DEFAULT }))
             }
         }).catch((error) => {
@@ -167,7 +352,7 @@ export const getOperations = (userId) => {
     }
 }
 
-export const addOperation = (userId, operationInfo) => {
+export const addOperation = (registerId, operationInfo) => {
     return async dispatch => {
 
         let operationInfoFinal = JSON.parse(JSON.stringify(operationInfo))
@@ -192,7 +377,7 @@ export const addOperation = (userId, operationInfo) => {
             operationInfoFinal = { ...operationInfo, photo: Path }
         }
 
-        set(ref(db, `users/${userId}/operations/${operationInfo.creationDate}`), operationInfoFinal);
+        set(ref(db, `moneyRegisters/${registerId}/operations/${operationInfo.creationDate}`), operationInfoFinal);
 
         dispatch({
             type: ADD_OPERATION,
@@ -201,7 +386,7 @@ export const addOperation = (userId, operationInfo) => {
     }
 }
 
-export const updateOperation = (userId, operationId, key, newValue) => {
+export const updateOperation = (registerId, operationId, key, newValue) => {
     return async dispatch => {
 
         let newValueFinal = newValue;
@@ -225,7 +410,7 @@ export const updateOperation = (userId, operationId, key, newValue) => {
             }
         }
 
-        set(ref(db, `users/${userId}/operations/${operationId}/${key}`), newValueFinal);
+        set(ref(db, `moneyRegisters/${registerId}/operations/${operationId}/${key}`), newValueFinal);
 
         dispatch({
             type: UPDATE_OPERATION,
@@ -234,9 +419,9 @@ export const updateOperation = (userId, operationId, key, newValue) => {
     }
 }
 
-export const deleteOperation = (userId, operationId) => {
+export const deleteOperation = (registerId, operationId) => {
     return async dispatch => {
-        remove(ref(db, `users/${userId}/operations/${operationId}`));
+        remove(ref(db, `moneyRegisters/${registerId}/operations/${operationId}`));
 
         dispatch({
             type: DELETE_OPERATION,

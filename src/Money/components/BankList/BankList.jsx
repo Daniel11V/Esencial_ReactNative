@@ -12,7 +12,7 @@ export const BankList = ({ handleClickBank, simplified = false }) => {
 	// Aqui se recive a banks y bank.accounts como arrays en vez de objects
 	const banksFiltered = useSelector((state) =>
 		simplified
-			? Object.values(state.money.banks)
+			? Object.values(state.money.currentRegister.banks)
 					.filter(
 						(bank) =>
 							Object.values(bank?.accounts)?.some(
@@ -25,7 +25,7 @@ export const BankList = ({ handleClickBank, simplified = false }) => {
 							(account) => account.category === "uso diario"
 						),
 					}))
-			: Object.values(state.money.banks).map((bank) => ({
+			: Object.values(state.money.currentRegister.banks).map((bank) => ({
 					...bank,
 					accounts: Object.values(bank?.accounts),
 			  }))

@@ -144,7 +144,7 @@ export const ImageSelector = ({
 				<Modal visible={true}>
 					<TouchableOpacity
 						onPress={() => setFullscreen(false)}
-						style={styles.modal}
+						style={STYLES.modal}
 					>
 						<View
 							style={{
@@ -212,7 +212,7 @@ export const ImageSelector = ({
 				<Modal visible={true}>
 					<TouchableOpacity
 						onPress={() => setFullscreen(false)}
-						style={styles.modal}
+						style={STYLES.modal}
 					>
 						<View
 							style={{
@@ -258,12 +258,6 @@ const styles = StyleSheet.create({
 		position: "absolute",
 		bottom: 9,
 		right: 9.5,
-	},
-	modal: {
-		backgroundColor: COLORS.tinyGray,
-		alignItems: "center",
-		justifyContent: "center",
-		flex: 1,
 	},
 	imgBigBox: {
 		minWidth: "100%",

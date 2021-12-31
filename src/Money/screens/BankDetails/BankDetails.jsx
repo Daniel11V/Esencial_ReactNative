@@ -33,8 +33,10 @@ export const BankDetails = ({ route, navigation }) => {
 	const { bankName, hasNewCurrency } = route.params;
 
 	const dispatch = useDispatch();
-	const userId = useSelector((state) => state.user.id);
-	const bank = useSelector((state) => state.money.banks[bankName]);
+	const registerId = useSelector((state) => state.money.currentRegisterId);
+	const bank = useSelector(
+		(state) => state.money.currentRegister.banks[bankName]
+	);
 
 	const [selectedAccount, setSelectedAccount] = useState(() =>
 		hasNewCurrency ? hasNewCurrency : Object.keys(bank.accounts)[0]
@@ -49,7 +51,7 @@ export const BankDetails = ({ route, navigation }) => {
 
 	const onDelete = () => {
 		dispatch(
-			addOperation(userId, {
+			addOperation(registerId, {
 				type: 3,
 				creationDate: Date.now(),
 				accountName: bank.name,
@@ -59,11 +61,11 @@ export const BankDetails = ({ route, navigation }) => {
 		);
 		if (Object.keys(bank.accounts).length === 1) {
 			navigation.goBack();
-			dispatch(deleteBank(userId, bank.name));
+			dispatch(deleteBank(registerId, bank.name));
 		} else {
 			dispatch(
 				deleteAccount(
-					userId,
+					registerId,
 					bank.name,
 					bank.accounts[selectedAccount]?.currency
 				)
@@ -186,7 +188,7 @@ export const BankDetails = ({ route, navigation }) => {
 							onValueChange={(newValue) =>
 								dispatch(
 									updateAccount(
-										userId,
+										registerId,
 										bank.name,
 										bank.accounts[selectedAccount]?.currency,
 										"category",
@@ -216,7 +218,6 @@ export const BankDetails = ({ route, navigation }) => {
 					</View>
 				</View>
 				{/* Operaciones */}
-				{/* <View style={{ marginBottom: 50 }}> */}
 				<Text style={{ ...STYLES.subtitle, marginBottom: 0 }}>Operaciones</Text>
 				<OperationList
 					handleClickOperation={(operationId) =>

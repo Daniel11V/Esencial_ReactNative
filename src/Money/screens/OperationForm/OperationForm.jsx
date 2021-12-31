@@ -22,14 +22,16 @@ import { ImageSelector } from "../../components/ImageSelector/ImageSelector";
 
 const MovementForm = ({ navigation }) => {
 	const dispatch = useDispatch();
-	const userId = useSelector((state) => state.user.id);
+	const registerId = useSelector((state) => state.user.id);
 
 	const [loading, setLoading] = useState(true);
 	const [enoughAccounts, setEnoughAccounts] = useState(false);
 
 	const [title, setTitle] = useState("");
 
-	const fromBankList = useSelector((state) => state.money.banks);
+	const fromBankList = useSelector(
+		(state) => state.money.currentRegister.banks
+	);
 
 	const [fromName, setFromName] = useState("");
 	const [fromCurrency, setFromCurrency] = useState("");
@@ -105,7 +107,7 @@ const MovementForm = ({ navigation }) => {
 
 		if (fromAmmount && sendToAmmount) {
 			dispatch(
-				addOperation(userId, {
+				addOperation(registerId, {
 					type: 2,
 					title,
 					creationDate: Date.now(),
@@ -124,7 +126,7 @@ const MovementForm = ({ navigation }) => {
 
 			dispatch(
 				updateAccount(
-					userId,
+					registerId,
 					fromName,
 					fromCurrency,
 					"ammount",
@@ -135,7 +137,7 @@ const MovementForm = ({ navigation }) => {
 
 			dispatch(
 				updateAccount(
-					userId,
+					registerId,
 					sendToName,
 					sendToCurrency,
 					"ammount",
@@ -363,14 +365,14 @@ const MovementForm = ({ navigation }) => {
 
 const IncomeForm = ({ navigation }) => {
 	const dispatch = useDispatch();
-	const userId = useSelector((state) => state.user.id);
+	const registerId = useSelector((state) => state.money.currentRegisterId);
 
 	const [loading, setLoading] = useState(true);
 	const [enoughAccounts, setEnoughAccounts] = useState(false);
 
 	const [title, setTitle] = useState("");
 
-	const bankList = useSelector((state) => state.money.banks);
+	const bankList = useSelector((state) => state.money.currentRegister.banks);
 
 	const [name, setName] = useState("");
 	const [currency, setCurrency] = useState("");
@@ -405,7 +407,7 @@ const IncomeForm = ({ navigation }) => {
 
 		if (ammount.length) {
 			dispatch(
-				addOperation(userId, {
+				addOperation(registerId, {
 					type: 4,
 					title,
 					creationDate: Date.now(),
@@ -419,7 +421,7 @@ const IncomeForm = ({ navigation }) => {
 
 			dispatch(
 				updateAccount(
-					userId,
+					registerId,
 					name,
 					currency,
 					"ammount",
@@ -554,14 +556,14 @@ const IncomeForm = ({ navigation }) => {
 
 const PayForm = ({ navigation }) => {
 	const dispatch = useDispatch();
-	const userId = useSelector((state) => state.user.id);
+	const registerId = useSelector((state) => state.money.currentRegisterId);
 
 	const [loading, setLoading] = useState(true);
 	const [enoughAccounts, setEnoughAccounts] = useState(false);
 
 	const [title, setTitle] = useState("");
 
-	const bankList = useSelector((state) => state.money.banks);
+	const bankList = useSelector((state) => state.money.currentRegister.banks);
 
 	const [name, setName] = useState("");
 	const [currency, setCurrency] = useState("");
@@ -597,7 +599,7 @@ const PayForm = ({ navigation }) => {
 
 		if (ammount.length) {
 			dispatch(
-				addOperation(userId, {
+				addOperation(registerId, {
 					type: 5,
 					title,
 					creationDate: Date.now(),
@@ -612,7 +614,7 @@ const PayForm = ({ navigation }) => {
 
 			dispatch(
 				updateAccount(
-					userId,
+					registerId,
 					name,
 					currency,
 					"ammount",

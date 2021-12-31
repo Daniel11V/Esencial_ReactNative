@@ -93,8 +93,6 @@ const styles = StyleSheet.create({
 		paddingBottom: 2,
 		paddingHorizontal: 8,
 		borderRadius: 5,
-		// width: 140,
-		// alignItems: "center",
 	},
 	accountItemCategoryText: {
 		color: "#fff",

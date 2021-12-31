@@ -1,12 +1,12 @@
-import { BankDetails } from "./screens/BankDetails/BankDetails";
-import { BankForm } from "./screens/BankForm/BankForm";
-import { Banks } from "./screens/Banks/Banks";
-import { MoneyHome } from "./screens/MoneyHome";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { OperationDetails } from "./screens/OperationDetails/OperationDetails";
+import { MoneyHome } from "./screens/MoneyHome";
+import { Banks } from "./screens/Banks/Banks";
+import { BankForm } from "./screens/BankForm/BankForm";
+import { BankDetails } from "./screens/BankDetails/BankDetails";
 import { Operations } from "./screens/Operations/Operations";
 import { OperationForm } from "./screens/OperationForm/OperationForm";
+import { OperationDetails } from "./screens/OperationDetails/OperationDetails";
 
 export const MoneyNavigator = () => {
 	const Stack = createNativeStackNavigator();

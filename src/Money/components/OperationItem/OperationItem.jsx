@@ -5,6 +5,13 @@ import { STYLES } from "../../../../constants/styles";
 
 export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 	const date = new Date(operationInfo.creationDate);
+	const printCategoryWord = !!(
+		operationInfo.type !== 0 &&
+		operationInfo.type !== 1 &&
+		operationInfo.type !== 3 &&
+		operationInfo.title?.length
+	);
+
 	const completeDate =
 		(date.getHours() < 10 ? "0" : "") +
 		date.getHours() +
@@ -51,9 +58,7 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 								marginBottom: 2,
 							}}
 						>
-							{operationInfo.type !== 0 &&
-								operationInfo.type !== 1 &&
-								"Categoria "}
+							{printCategoryWord && "Categoria "}
 							{OPERATIONS_TYPES[operationInfo.type]}
 						</Text>
 						<Text style={{ ...STYLES.normalText, fontSize: 13 }}>
@@ -74,7 +79,7 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 						>
 							{operationInfo.type === 1
 								? operationInfo.initialAmmount
-								: "-" + operationInfo.finalAmmount}{" "}
+								: 0 - operationInfo.finalAmmount}{" "}
 							{operationInfo.currencyName}
 						</Text>
 						<Text style={{ ...STYLES.normalText }}>

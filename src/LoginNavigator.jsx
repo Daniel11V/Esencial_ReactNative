@@ -20,7 +20,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../store/actions/user.action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import loginBackgroundImg from "../assets/login-background.png";
-import { borderColor } from "react-native/Libraries/Components/View/ReactNativeStyleAttributes";
 
 const LoginScreen = () => {
 	const dispatch = useDispatch();
@@ -33,7 +32,7 @@ const LoginScreen = () => {
 		setMessageType(type);
 	};
 
-	const handleGoogleSignin = () => {
+	const handleGoogleSigninBtn = () => {
 		setGoogleLoading(true);
 
 		const config = {
@@ -41,16 +40,24 @@ const LoginScreen = () => {
 				"630395241807-0jfj7kdh37518rl8rer30n26tv6e0kg9.apps.googleusercontent.com",
 			iosClientId:
 				"630395241807-5a798la0t7ot29iqqbhk6hd8mgb0qlev.apps.googleusercontent.com",
+			iosStandaloneAppClientId:
+				"630395241807-pa30r6sthtblp02um0i0hfg76k64m2aq.apps.googleusercontent.com",
+			androidStandaloneAppClientId:
+				"630395241807-fkjpsql0drpt0988uh56pkrd07okcukj.apps.googleusercontent.com",
 			scopes: ["profile", "email"],
 		};
 
 		Google.logInAsync(config)
 			.then((result) => {
-				const { type, user } = result;
+				const { type, user, accessToken } = result;
 				if (type == "success") {
 					const { id, email, name, photoUrl } = user;
 					handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
-					persistLogin({ id, email, name, photoUrl }, message, "SUCCESS");
+					persistLogin(
+						{ id, email, name, photoUrl, accessToken },
+						message,
+						"SUCCESS"
+					);
 				} else {
 					handleMessage("Inicio de sesion cancelado.");
 				}
@@ -124,7 +131,10 @@ const LoginScreen = () => {
 				>
 					{message}
 				</Text>
-				<Pressable onPress={() => handleGoogleSignin()} style={styles.logBtn}>
+				<Pressable
+					onPress={() => handleGoogleSigninBtn()}
+					style={styles.logBtn}
+				>
 					{googleLoading ? (
 						<ActivityIndicator
 							size="large"
