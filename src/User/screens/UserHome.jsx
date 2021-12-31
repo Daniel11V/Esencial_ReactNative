@@ -1,10 +1,12 @@
 import React from "react";
 import { Image, TouchableOpacity, View, StyleSheet, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import userLogoDefault from "../../../assets/user-img-login.png";
 import { COLORS } from "../../../constants/colors";
 import { STYLES } from "../../../constants/styles";
 import { logout } from "../../../store/actions/user.action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as GoogleSignIn from "expo-google-sign-in";
 
 export const UserHome = () => {
 	const user = useSelector((state) => state.user);
@@ -14,6 +16,7 @@ export const UserHome = () => {
 		AsyncStorage.removeItem("esencialCredentials")
 			.then(() => {
 				dispatch(logout());
+				GoogleSignIn.signOutAsync();
 			})
 			.catch((error) => console.log(error));
 	};
@@ -27,7 +30,10 @@ export const UserHome = () => {
 				justifyContent: "center",
 			}}
 		>
-			<Image style={styles.userImg} source={{ uri: user.photoUrl }} />
+			<Image
+				style={styles.userImg}
+				source={user.photoUrl ? { uri: user.photoUrl } : userLogoDefault}
+			/>
 			<Text>{user.name ? user.name : "Nombre"}</Text>
 			<Text>{user.email ? user.email : "Email"}</Text>
 			<TouchableOpacity onPress={handleLogout} style={styles.logBtn}>
