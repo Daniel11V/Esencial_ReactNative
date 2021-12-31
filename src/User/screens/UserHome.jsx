@@ -1,7 +1,6 @@
 import React from "react";
 import { Image, TouchableOpacity, View, StyleSheet, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import userLogoDefault from "../../../assets/user-img-login.png";
 import { COLORS } from "../../../constants/colors";
 import { STYLES } from "../../../constants/styles";
 import { logout } from "../../../store/actions/user.action";
@@ -28,10 +27,7 @@ export const UserHome = () => {
 				justifyContent: "center",
 			}}
 		>
-			<Image
-				style={styles.userImg}
-				source={user.photoUrl ? { uri: user.photoUrl } : userLogoDefault}
-			/>
+			<Image style={styles.userImg} source={{ uri: user.photoUrl }} />
 			<Text>{user.name ? user.name : "Nombre"}</Text>
 			<Text>{user.email ? user.email : "Email"}</Text>
 			<TouchableOpacity onPress={handleLogout} style={styles.logBtn}>

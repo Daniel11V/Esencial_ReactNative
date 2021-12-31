@@ -1,4 +1,4 @@
-import { child, ref, get, set, remove, push, limitToLast, query, equalTo, onValue, orderByChild } from "firebase/database";
+import { child, ref, get, set, remove, push, onValue } from "firebase/database";
 import { db } from "../../database/firebase"
 import { BANKS_DEFAULT } from "../../constants/bankConstants"
 import { OPERATIONS_DEFAULT } from "../../constants/operationConstants";

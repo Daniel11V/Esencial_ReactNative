@@ -15,10 +15,12 @@ import { STYLES } from "../constants/styles";
 import { COLORS } from "../constants/colors";
 import { StatusBar } from "expo-status-bar";
 
-import * as Google from "expo-google-app-auth";
+// import * as Google from "expo-google-app-auth";
+import * as GoogleSignIn from "expo-google-sign-in";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../store/actions/user.action";
+import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { login } from "../store/actions/user.action";
 import loginBackgroundImg from "../assets/login-background.png";
 
 const LoginScreen = () => {
@@ -27,49 +29,111 @@ const LoginScreen = () => {
 	const [message, setMessage] = useState("");
 	const [messageType, setMessageType] = useState("");
 
-	const handleMessage = (message, type = "FAILED") => {
-		setMessage(message);
-		setMessageType(type);
-	};
-
-	const handleGoogleSigninBtn = () => {
-		setGoogleLoading(true);
+	useEffect(() => {
+		let isMounted = true;
 
 		const config = {
 			androidClientId:
 				"630395241807-0jfj7kdh37518rl8rer30n26tv6e0kg9.apps.googleusercontent.com",
 			iosClientId:
 				"630395241807-5a798la0t7ot29iqqbhk6hd8mgb0qlev.apps.googleusercontent.com",
+			androidStandaloneAppClientId:
+				"630395241807-m9q2h9vb4pntte8orbgm6qt373p6pnj8.apps.googleusercontent.com",
 			iosStandaloneAppClientId:
 				"630395241807-pa30r6sthtblp02um0i0hfg76k64m2aq.apps.googleusercontent.com",
-			androidStandaloneAppClientId:
-				"630395241807-fkjpsql0drpt0988uh56pkrd07okcukj.apps.googleusercontent.com",
+			clientId:
+				"630395241807-m9q2h9vb4pntte8orbgm6qt373p6pnj8.apps.googleusercontent.com",
 			scopes: ["profile", "email"],
 		};
 
-		Google.logInAsync(config)
-			.then((result) => {
-				const { type, user, accessToken } = result;
-				if (type == "success") {
-					const { id, email, name, photoUrl } = user;
-					handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
-					persistLogin(
-						{ id, email, name, photoUrl, accessToken },
-						message,
-						"SUCCESS"
-					);
-				} else {
-					handleMessage("Inicio de sesion cancelado.");
-				}
-				setGoogleLoading(false);
-			})
-			.catch((error) => {
-				console.log(error);
-				handleMessage(
-					"Ocurrio un error. Comprueba tu conexión a internet e intenta de nuevo."
-				);
-				setGoogleLoading(false);
-			});
+		// BEFORE width expo-google-app-auth
+
+		// const config = {
+		// 	androidClientId:
+		// 		"630395241807-0jfj7kdh37518rl8rer30n26tv6e0kg9.apps.googleusercontent.com",
+		// 	iosClientId:
+		// 		"630395241807-5a798la0t7ot29iqqbhk6hd8mgb0qlev.apps.googleusercontent.com",
+		// 	iosStandaloneAppClientId:
+		// 		"630395241807-pa30r6sthtblp02um0i0hfg76k64m2aq.apps.googleusercontent.com",
+		// 	androidStandaloneAppClientId:
+		// 		"630395241807-fkjpsql0drpt0988uh56pkrd07okcukj.apps.googleusercontent.com",
+		// 	scopes: ["profile", "email"],
+		// };
+
+		GoogleSignIn.initAsync(config);
+
+		return () => {
+			isMounted = false;
+		};
+	}, []);
+
+	const handleMessage = (message, type = "FAILED") => {
+		setMessage(message);
+		setMessageType(type);
+	};
+
+	syncUserWithStateAsync = async () => {
+		const user = await GoogleSignIn.signInSilentlyAsync();
+		if (user) {
+			const { uid, email, displayName, photoURL, auth } = user;
+			persistLogin(
+				{
+					id: uid,
+					accessToken: auth.accessToken,
+					email,
+					name: displayName,
+					photoUrl: photoURL,
+				},
+				message,
+				"SUCCESS"
+			);
+		}
+	};
+
+	const handleGoogleSigninBtn = async () => {
+		setGoogleLoading(true);
+
+		try {
+			await GoogleSignIn.askForPlayServicesAsync();
+			const { type, user } = await GoogleSignIn.signInAsync();
+			if (type === "success") {
+				handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
+				syncUserWithStateAsync();
+			} else {
+				handleMessage("Inicio de sesion cancelado.");
+			}
+			setGoogleLoading(false);
+		} catch (error) {
+			console.log(error);
+			handleMessage(
+				"Ocurrio un error. Comprueba tu conexión a internet e intenta de nuevo."
+			);
+			setGoogleLoading(false);
+		}
+
+		// Google.logInAsync(config)
+		// 	.then((result) => {
+		// 		const { type, user, accessToken } = result;
+		// 		if (type == "success") {
+		// 			const { id, email, name, photoUrl } = user;
+		// 			handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
+		// 			persistLogin(
+		// 				{ id, email, name, photoUrl, accessToken },
+		// 				message,
+		// 				"SUCCESS"
+		// 			);
+		// 		} else {
+		// 			handleMessage("Inicio de sesion cancelado.");
+		// 		}
+		// 		setGoogleLoading(false);
+		// 	})
+		// 	.catch((error) => {
+		// 		console.log(error);
+		// 		handleMessage(
+		// 			"Ocurrio un error. Comprueba tu conexión a internet e intenta de nuevo."
+		// 		);
+		// 		setGoogleLoading(false);
+		// 	});
 	};
 
 	const persistLogin = (credentials, message, status) => {
@@ -193,16 +257,39 @@ const styles = StyleSheet.create({
 	},
 });
 
-export const LoginNavigator = ({ asyncData }) => {
+export const LoginNavigator = () => {
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user);
 	const Stack = createNativeStackNavigator();
 
-	useEffect(() => {
-		if (asyncData.id?.length) {
-			dispatch(login(asyncData));
-		}
-	}, [asyncData]);
+	const [appReady, setAppReady] = useState(false);
+
+	const checkLoginCredentials = () => {
+		AsyncStorage.getItem("esencialCredentials")
+			.then((result) => {
+				if (result !== null) {
+					// setAsyncData(JSON.parse(result));
+					dispatch(login(JSON.parse(result)));
+				} else {
+					dispatch(login({ id: "" }));
+				}
+				console.log("Async Finish");
+			})
+			.catch((error) => {
+				dispatch(login({ id: "" }));
+				console.log(error);
+			});
+	};
+
+	if (!appReady || !user.id.localeCompare("0")) {
+		return (
+			<AppLoading
+				startAsync={checkLoginCredentials}
+				onFinish={() => setAppReady(true)}
+				onError={console.warn}
+			/>
+		);
+	}
 
 	return (
 		<NavigationContainer>

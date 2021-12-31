@@ -19,6 +19,7 @@
     "expo-app-loading": "~1.2.1",
     "expo-file-system": "~13.0.3",
     "expo-google-app-auth": "~9.0.0",
+    "expo-google-sign-in": "~10.0.3",
     "expo-image-picker": "~11.0.3",
     "expo-linear-gradient": "~10.0.3",
     "expo-status-bar": "~1.1.0",
