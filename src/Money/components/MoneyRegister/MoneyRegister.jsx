@@ -25,6 +25,7 @@ import { ParticipantItem } from "../ParticipantItem/ParticipantItem";
 export const MoneyRegister = () => {
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user);
+	const loadingFirstView = useSelector((state) => state.money.loadingFirstView);
 	const availableRegisters = useSelector(
 		(state) => state.money.availableRegisters
 	);
@@ -70,7 +71,10 @@ export const MoneyRegister = () => {
 	const changeRegisterSelected = (newRegisterId) => {
 		if (!newRegisterId.localeCompare("1")) {
 			setModalNewRegister(true);
-		} else if (!!newRegisterId.localeCompare(registerSelected)) {
+		} else if (
+			!!newRegisterId.localeCompare(registerSelected) &&
+			!loadingFirstView
+		) {
 			dispatch(getMoneyRegister(newRegisterId));
 		}
 	};
@@ -114,24 +118,18 @@ export const MoneyRegister = () => {
 	};
 
 	return (
-		<View
-			style={{
-				...STYLES.row,
-				marginBottom: 15,
-			}}
-		>
+		<View style={STYLES.row}>
 			<Pressable
 				style={{
 					...STYLES.row,
-					marginRight: 5,
+					paddingBottom: 15,
 					flex: 1,
 					justifyContent: "flex-start",
-					marginRight: 30,
 				}}
 				onPress={() => pickerRegister.current.focus()}
 			>
 				<Text style={{ ...STYLES.bigTitle, marginRight: 5 }}>
-					{currentRegister.name.length ? currentRegister.name : "Cargando..."}
+					{currentRegister.name?.length ? currentRegister.name : "Cargando..."}
 				</Text>
 				<MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
 				<Picker
@@ -224,7 +222,13 @@ export const MoneyRegister = () => {
 				</Pressable>
 			</Modal>
 			<Pressable
-				style={{ marginRight: 5 }}
+				style={{
+					padding: 10,
+					paddingBottom: 20,
+					paddingLeft: 15,
+					position: "absolute",
+					right: 0,
+				}}
 				onPress={() => setModalParticipants(true)}
 			>
 				<Feather name="users" size={24} color="black" />
@@ -239,7 +243,8 @@ export const MoneyRegister = () => {
 						style={{
 							width: "90%",
 							minHeight: "30%",
-							padding: 20,
+							paddingTop: 20,
+							paddingHorizontal: 15,
 							paddingBottom: 10,
 							position: "relative",
 							backgroundColor: "#fff",
@@ -255,12 +260,12 @@ export const MoneyRegister = () => {
 								paddingTop: 5,
 							}}
 						>
-							{Object.keys(currentRegister.participants).length === 1
+							{Object.keys(currentRegister.participants)?.length === 1
 								? `${
-										Object.keys(currentRegister.participants).length
+										Object.keys(currentRegister.participants)?.length
 								  } participante`
 								: `${
-										Object.keys(currentRegister.participants).length
+										Object.keys(currentRegister.participants)?.length
 								  } participantes`}
 						</Text>
 						<ParticipantItem

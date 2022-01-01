@@ -72,7 +72,7 @@ const LoginScreen = () => {
 		setMessageType(type);
 	};
 
-	syncUserWithStateAsync = async () => {
+	const syncUserWithStateAsync = async () => {
 		const user = await GoogleSignIn.signInSilentlyAsync();
 		if (user) {
 			const { uid, email, displayName, photoURL, auth } = user;

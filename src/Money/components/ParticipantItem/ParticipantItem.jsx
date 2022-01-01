@@ -3,6 +3,8 @@ import { STYLES } from "../../../../constants/styles";
 import React from "react";
 import { COLORS } from "../../../../constants/colors";
 import { Feather } from "@expo/vector-icons";
+// import userLogoDefault from "../../../assets/user-img-login.png";
+import userLogoDefault from "../../../../assets/user-img-login.png";
 
 export const ParticipantItem = ({
 	participantInfo,
@@ -19,49 +21,51 @@ export const ParticipantItem = ({
 				handleClickParticipant(isButton ? null : participantInfo.email)
 			}
 		>
-			<View style={{ alignSelf: "stretch", ...STYLES.row, flex: 1 }}>
-				{isButton ? (
-					<View
-						style={{
-							...STYLES.tinyParticipantImg,
-							backgroundColor: COLORS.primary,
-							justifyContent: "center",
-							alignItems: "center",
-							paddingLeft: 3,
-						}}
-					>
-						<Feather name="user-plus" color="white" size={22}></Feather>
-					</View>
-				) : (
-					<Image
-						style={STYLES.tinyParticipantImg}
-						source={{ uri: participantInfo.photoUrl }}
-					/>
-				)}
+			{isButton ? (
 				<View
 					style={{
-						alignSelf: "center",
+						...STYLES.tinyParticipantImg,
+						backgroundColor: COLORS.primary,
 						justifyContent: "center",
-						flex: 1,
+						alignItems: "center",
+						paddingLeft: 3,
+					}}
+				>
+					<Feather name="user-plus" color="white" size={22}></Feather>
+				</View>
+			) : (
+				<Image
+					style={STYLES.tinyParticipantImg}
+					source={
+						participantInfo.photoUrl
+							? { uri: participantInfo.photoUrl }
+							: userLogoDefault
+					}
+				/>
+			)}
+			<View
+				style={{
+					justifyContent: "center",
+					alignItems: "stretch",
+					flex: 1,
+				}}
+			>
+				<View
+					style={{
+						...STYLES.row,
+						justifyContent: "space-between",
+						alignSelf: "stretch",
 					}}
 				>
 					<Text
 						style={{
 							...STYLES.userName,
 							color: "rgba(0, 0, 0, 0.7)",
-							// fontWeight: "bold",
 						}}
 					>
 						{isButton ? participantInfo.title : participantInfo.name}
 					</Text>
-					{!isButton && (
-						<Text style={STYLES.userEmail}>{participantInfo.email}</Text>
-					)}
-				</View>
-			</View>
-			{!isButton && (
-				<View style={{ alignSelf: "stretch" }}>
-					{userIsOwner ? (
+					{!!(!isButton && userIsOwner) && (
 						<View
 							style={{
 								...STYLES.row,
@@ -79,7 +83,8 @@ export const ParticipantItem = ({
 								{accessLevelWords[participantInfo.accessLevel]}
 							</Text>
 						</View>
-					) : (
+					)}
+					{!!(!isButton && !userIsOwner) && (
 						<Text
 							style={{
 								...STYLES.userEmail,
@@ -91,7 +96,10 @@ export const ParticipantItem = ({
 						</Text>
 					)}
 				</View>
-			)}
+				{!isButton && (
+					<Text style={STYLES.userEmail}>{participantInfo.email}</Text>
+				)}
+			</View>
 		</TouchableOpacity>
 	);
 };

@@ -47,7 +47,6 @@ export const setOperations = (operationsUpdated) => ({
 
 export const getPersonalRegisterFirstView = (user) => {
     return async dispatch => {
-
         try {
 
             // const moneyRegistersRef = query(ref(db, 'money-registers'), orderByChild('ownerId'), equalTo("8653738749034139"))
@@ -65,24 +64,29 @@ export const getPersonalRegisterFirstView = (user) => {
                         payload: { personalMoneyRegisterId }
                     })
                     dispatch(getAvailableMoneyRegisters(user))
-                    dispatch(getMoneyRegister(personalMoneyRegisterId))
+                    if (personalMoneyRegisterId.length) {
+                        dispatch(getMoneyRegister(personalMoneyRegisterId))
+                    } else {
+                        console.log("Error width personalMoneyRegisterId");
+                    }
                 } else {
-                    console.log("No data available (notifications) (personalMoneyRegisterId)");
+                    console.log("No data available (personalMoneyRegisterId)");
 
                     dispatch(createMoneyRegister(user.name, user))
                 }
 
                 dispatch(checkNotifications(user.email))
 
+                dispatch(endLoading())
             }, {
                 onlyOnce: true
             });
 
         } catch (error) {
             console.warn(error);
+            dispatch(endLoading())
         }
 
-        dispatch(endLoading())
     }
 }
 
@@ -99,7 +103,7 @@ export const getAvailableMoneyRegisters = (user) => {
                     payload: { moneyRegistersId }
                 })
             } else {
-                console.log("No data available (notifications) (availableMoneyRegisters)");
+                console.log("No data available (availableMoneyRegisters)");
                 dispatch({
                     type: SET_MONEY_REGISTERS_ID,
                     payload: { moneyRegistersId: {} }
@@ -116,13 +120,12 @@ export const getMoneyRegister = (registerId) => {
             if (snapshot.exists()) {
 
                 const moneyRegister = snapshot.val()
-
                 dispatch({
                     type: SET_MONEY_REGISTER,
                     payload: { registerId, moneyRegister }
                 })
             } else {
-                console.log("No data available (notifications) (moneyRegister)");
+                console.log("No data available (moneyRegister)");
             }
         }, { onlyOnce: true });
     }
@@ -182,8 +185,6 @@ export const addMoneyRegister = (newMoneyRegister, notificationId, user) => {
             type: ADD_MONEY_REGISTER,
             payload: { newMoneyRegister }
         })
-
-        dispatch(getMoneyRegister(newMoneyRegister.id))
 
         dispatch(getMoneyRegister(newMoneyRegister.id))
 

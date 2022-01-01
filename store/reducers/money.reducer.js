@@ -15,7 +15,7 @@ const initialState = {
         banks: {},
         operations: {},
         participants: {
-            ["123"]: {
+            initial: {
                 email: '',
                 name: '',
                 photoUrl: '',
