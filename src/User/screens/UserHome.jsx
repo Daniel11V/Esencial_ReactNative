@@ -7,10 +7,24 @@ import { STYLES } from "../../../constants/styles";
 import { logout } from "../../../store/actions/user.action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as GoogleSignIn from "expo-google-sign-in";
+import * as Updates from "expo-updates";
 
 export const UserHome = () => {
 	const user = useSelector((state) => state.user);
 	const dispatch = useDispatch();
+	const [updateAvailable, setUpdateAvailable] = useState(false);
+
+	useEffect(() => {
+		try {
+			const update = await Expo.Updates.checkForUpdateAsync();
+			if (update.isAvailable) {
+				await Updates.fetchUpdateAsync();
+				setUpdateAvailable(true);
+			}
+		} catch (e) {
+			console.warn(e);
+		}
+	}, []);
 
 	const handleLogout = () => {
 		AsyncStorage.removeItem("esencialCredentials")
@@ -39,6 +53,30 @@ export const UserHome = () => {
 			<TouchableOpacity onPress={handleLogout} style={styles.logBtn}>
 				<Text style={styles.logBtnText}>Cerrar Sesion</Text>
 			</TouchableOpacity>
+			<View
+				style={{
+					position: "absolute",
+					bottom: 20,
+					left: 20,
+					width: "100%",
+					alignSelf: "center",
+				}}
+			></View>
+			<Text style={styles.normalText}>Version {Updates.updateId}</Text>
+			{updateAvailable && (
+				<TouchableOpacity onPress={() => Updates.reloadAsync()}>
+					<Text
+						style={{
+							...styles.normalText,
+							color: COLORS.primary,
+							borderBottomColor: COLORS.primary,
+							borderBottomWidth: 1,
+						}}
+					>
+						Nueva actualización disponible
+					</Text>
+				</TouchableOpacity>
+			)}
 		</View>
 	);
 };
