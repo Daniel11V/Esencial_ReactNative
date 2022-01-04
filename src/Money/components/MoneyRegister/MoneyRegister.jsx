@@ -128,7 +128,7 @@ export const MoneyRegister = () => {
 				}}
 				onPress={() => pickerRegister.current.focus()}
 			>
-				<Text style={{ ...STYLES.bigTitle, marginRight: 5 }}>
+				<Text style={{ ...STYLES.bigTitle, marginRight: 5, flexShrink: 1 }}>
 					{currentRegister.name?.length ? currentRegister.name : "Cargando..."}
 				</Text>
 				<MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
@@ -226,8 +226,8 @@ export const MoneyRegister = () => {
 					padding: 10,
 					paddingBottom: 20,
 					paddingLeft: 15,
-					position: "absolute",
-					right: 0,
+					// position: "absolute",
+					// right: 0,
 				}}
 				onPress={() => setModalParticipants(true)}
 			>
