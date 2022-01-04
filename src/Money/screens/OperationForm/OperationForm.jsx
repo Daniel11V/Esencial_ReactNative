@@ -22,7 +22,7 @@ import { ImageSelector } from "../../components/ImageSelector/ImageSelector";
 
 const MovementForm = ({ navigation }) => {
 	const dispatch = useDispatch();
-	const registerId = useSelector((state) => state.user.id);
+	const registerId = useSelector((state) => state.money.currentRegisterId);
 
 	const [loading, setLoading] = useState(true);
 	const [enoughAccounts, setEnoughAccounts] = useState(false);
