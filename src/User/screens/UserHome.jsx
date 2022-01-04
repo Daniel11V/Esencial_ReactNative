@@ -14,9 +14,9 @@ export const UserHome = () => {
 	const dispatch = useDispatch();
 	const [updateAvailable, setUpdateAvailable] = useState(false);
 
-	useEffect(() => {
+	const fetchUpdate = async () => {
 		try {
-			const update = await Expo.Updates.checkForUpdateAsync();
+			const update = await Updates.checkForUpdateAsync();
 			if (update.isAvailable) {
 				await Updates.fetchUpdateAsync();
 				setUpdateAvailable(true);
@@ -24,6 +24,10 @@ export const UserHome = () => {
 		} catch (e) {
 			console.warn(e);
 		}
+	};
+
+	useEffect(() => {
+		fetchUpdate();
 	}, []);
 
 	const handleLogout = () => {
