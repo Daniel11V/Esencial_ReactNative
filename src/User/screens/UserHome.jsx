@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Image, TouchableOpacity, View, StyleSheet, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import userLogoDefault from "../../../assets/user-img-login.png";
@@ -60,27 +60,33 @@ export const UserHome = () => {
 			<View
 				style={{
 					position: "absolute",
-					bottom: 20,
-					left: 20,
-					width: "100%",
+					bottom: 15,
 					alignSelf: "center",
 				}}
-			></View>
-			<Text style={styles.normalText}>Version {Updates.updateId}</Text>
-			{updateAvailable && (
-				<TouchableOpacity onPress={() => Updates.reloadAsync()}>
+			>
+				<View>
+					{updateAvailable && (
+						<TouchableOpacity onPress={() => Updates.reloadAsync()}>
+							<Text
+								style={{
+									...STYLES.normalText,
+									...styles.linkText,
+								}}
+							>
+								Nueva actualización disponible
+							</Text>
+						</TouchableOpacity>
+					)}
 					<Text
 						style={{
-							...styles.normalText,
-							color: COLORS.primary,
-							borderBottomColor: COLORS.primary,
-							borderBottomWidth: 1,
+							...STYLES.normalText,
+							...styles.versionText,
 						}}
 					>
-						Nueva actualización disponible
+						Version {Updates.updateId ? Updates.updateId : "..."}
 					</Text>
-				</TouchableOpacity>
-			)}
+				</View>
+			</View>
 		</View>
 	);
 };
@@ -103,5 +109,17 @@ const styles = StyleSheet.create({
 		color: "#fff",
 		fontWeight: "bold",
 		fontSize: 18,
+	},
+	versionText: {
+		color: "rgba(0,0,0,0.5)",
+		textAlign: "center",
+		fontStyle: "italic",
+	},
+	linkText: {
+		color: COLORS.primary,
+		borderBottomColor: COLORS.primary,
+		borderBottomWidth: 1,
+		textAlign: "center",
+		marginBottom: 10,
 	},
 });
