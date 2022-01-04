@@ -64,7 +64,7 @@ export const UserHome = () => {
 					alignSelf: "center",
 				}}
 			>
-				<View>
+				<View style={{ alignItems: "center" }}>
 					{updateAvailable && (
 						<TouchableOpacity onPress={() => Updates.reloadAsync()}>
 							<Text

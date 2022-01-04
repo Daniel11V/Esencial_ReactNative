@@ -289,6 +289,23 @@ export const MoneyRegister = () => {
 							showsHorizontalScrollIndicator={false}
 							nestedScrollEnabled
 						/>
+						<View
+							style={{
+								borderTopWidth: 1,
+								borderColor: "rgba(0,0,0,0.4)",
+								paddingTop: 5,
+								marginTop: 10,
+							}}
+						>
+							{userIsOwner && (
+								<ParticipantItem
+									participantInfo={{ title: "Eliminar registro de cuentas" }}
+									handleClickParticipant={() => setModalShare(true)}
+									userIsOwner={userIsOwner}
+									isButton={true}
+								/>
+							)}
+						</View>
 					</Pressable>
 				</Pressable>
 			</Modal>
