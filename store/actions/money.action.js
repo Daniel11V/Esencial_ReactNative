@@ -11,6 +11,7 @@ export const SET_MONEY_REGISTERS_ID = 'SET_MONEY_REGISTERS_ID'
 export const SET_MONEY_REGISTER = 'SET_MONEY_REGISTER'
 export const CREATE_MONEY_REGISTER = 'CREATE_MONEY_REGISTER'
 export const ADD_MONEY_REGISTER = 'ADD_MONEY_REGISTER'
+export const LEAVE_MONEY_REGISTER = 'LEAVE_MONEY_REGISTER'
 
 export const SET_MONEY_NOTIFICATIONS = 'SET_MONEY_NOTIFICATIONS'
 export const DELETE_MONEY_NOTIFICATION = 'DELETE_MONEY_NOTIFICATION'
@@ -171,7 +172,7 @@ export const createMoneyRegister = (newRegisterName, user) => {
     }
 }
 
-export const addMoneyRegister = (newMoneyRegister, notificationId, user) => {
+export const addMoneyRegister = (newMoneyRegister, user) => {
     return async dispatch => {
 
         set(ref(db, `users/${user.id}/availableMoneyRegisters/${newMoneyRegister.id}`), { id: newMoneyRegister.id, name: newMoneyRegister.name });
@@ -187,8 +188,6 @@ export const addMoneyRegister = (newMoneyRegister, notificationId, user) => {
         })
 
         dispatch(getMoneyRegister(newMoneyRegister.id))
-
-        dispatch(deleteMoneyNotification(notificationId));
     }
 }
 
@@ -253,6 +252,88 @@ export const deleteMoneyNotification = (notificationId) => {
         dispatch({
             type: DELETE_MONEY_NOTIFICATION,
             payload: { notificationId }
+        })
+    }
+}
+
+export const leaveMoneyRegister = (user, registerId, availableRegisters, participants = {}, personalRegisterId = '') => {
+    return async dispatch => {
+
+        let newAvailableRegisters = JSON.parse(JSON.stringify(availableRegisters))
+        delete newAvailableRegisters[registerId]
+
+        set(ref(db, `users/${user.id}/availableMoneyRegisters`), newAvailableRegisters);
+
+        dispatch({
+            type: LEAVE_MONEY_REGISTER,
+            payload: { newAvailableRegisters }
+        })
+
+        if (personalRegisterId.length) {
+            let newParticipants = JSON.parse(JSON.stringify(participants))
+            const partIndex = Object.values(newParticipants).findIndex(part => part.email.includes(user.email))
+            delete newParticipants[Object.keys(newParticipants)[partIndex]]
+
+            set(ref(db, `moneyRegisters/${registerId}/participants`), newParticipants);
+
+            dispatch(getMoneyRegister(personalRegisterId))
+        }
+
+    }
+}
+
+export const deleteMoneyRegister = (registerId, register, availableRegisters, personalRegisterId, user) => {
+    return async dispatch => {
+
+        // Borrar todas las notificaciones pendientes relacionadas al registro
+        onValue(ref(db, 'moneyNotifications'), (snapshot) => {
+            if (snapshot.exists()) {
+                snapshot.forEach((childSnapshot) => {
+                    const notification = childSnapshot.val();
+                    if (!notification.moneyRegister.id.localeCompare(registerId)) {
+                        remove(ref(db, `moneyNotifications/${childSnapshot.key}`));
+                    }
+                });
+
+
+                // Enviar notificacion a participantes para que quiten el 
+                // registro de availableMoneyRegisters
+                for (let participant of Object.values(register.participants)) {
+                    if (!participant.email.includes(user.email)) {
+                        const newNotification = {
+                            type: "Money Register Deletion",
+                            moneyRegister: {
+                                id: registerId,
+                                name: register.name,
+                            },
+                            sendToEmail: participant.email,
+                            from: {
+                                name: user.name,
+                                email: user.email,
+                            }
+                        }
+
+                        set(push(ref(db, `moneyNotifications`)), newNotification);
+                    }
+                }
+            }
+        }, {
+            onlyOnce: true
+        });
+
+        // Borrar MoneyRegister
+        remove(ref(db, `moneyRegisters/${registerId}`));
+
+        // Actualizar mis availableRegisters
+        let newAvailableRegisters = JSON.parse(JSON.stringify(availableRegisters))
+        delete newAvailableRegisters[registerId]
+        set(ref(db, `users/${user.id}/availableMoneyRegisters`), newAvailableRegisters);
+
+        dispatch(getMoneyRegister(personalRegisterId))
+
+        dispatch({
+            type: LEAVE_MONEY_REGISTER,
+            payload: { newAvailableRegisters }
         })
     }
 }

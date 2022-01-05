@@ -17,6 +17,7 @@ import {
 	addMoneyRegister,
 	deleteMoneyNotification,
 	getPersonalRegisterFirstView,
+	leaveMoneyRegister,
 } from "../../../store/actions/money.action";
 import { OperationList } from "../components/OperationList/OperationList";
 import { MoneyRegister } from "../components/MoneyRegister/MoneyRegister";
@@ -25,6 +26,9 @@ export const MoneyHome = ({ navigation }) => {
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user);
 	const notifications = useSelector((state) => state.money.notifications);
+	const availableRegisters = useSelector(
+		(state) => state.money.availableRegisters
+	);
 	const [runingNotifications, setRuningNotifications] = useState(false);
 
 	useEffect(() => {
@@ -33,12 +37,11 @@ export const MoneyHome = ({ navigation }) => {
 		}
 	}, [user]);
 
+	// Notification Manager
 	useEffect(() => {
 		const execNotifications = async (notifications) => {
 			for (const notifId of Object.keys(notifications)) {
-				if (notifications[notifId].type === "Invitation to Money Register") {
-					await execNotification(notifications[notifId], notifId);
-				}
+				await execNotification(notifications[notifId], notifId);
 			}
 		};
 
@@ -51,28 +54,60 @@ export const MoneyHome = ({ navigation }) => {
 
 	const execNotification = (notification, notificationId) => {
 		return new Promise((resolve, reject) => {
-			const title =
-				notification.from.name === notification.moneyRegister.name
-					? `${notification.from.name} te ha invitado a su registro de cuentas personal`
-					: `${notification.from.name} te ha invitado al registro de cuentas "${notification.moneyRegister.name}"`;
-			Alert.alert(title, "Aceptas la invitación?", [
-				{
-					text: "Rechazar",
-					onPress: () => {
-						dispatch(deleteMoneyNotification(notificationId));
-						resolve();
-					},
-				},
-				{
-					text: "Aceptar",
-					onPress: () => {
-						dispatch(
-							addMoneyRegister(notification.moneyRegister, notificationId, user)
-						);
-						resolve();
-					},
-				},
-			]);
+			if (!notification.type.localeCompare("Invitation to Money Register")) {
+				const description =
+					notification.from.name === notification.moneyRegister.name
+						? `${notification.from.name} te ha invitado a su registro de cuentas personal`
+						: `${notification.from.name} te ha invitado al registro de cuentas "${notification.moneyRegister.name}"`;
+
+				Alert.alert(
+					"Nueva invitación!",
+					description,
+					[
+						{
+							text: "Rechazar",
+							onPress: () => {
+								dispatch(deleteMoneyNotification(notificationId));
+								resolve();
+							},
+						},
+						{
+							text: "Aceptar",
+							onPress: () => {
+								dispatch(addMoneyRegister(notification.moneyRegister, user));
+								dispatch(deleteMoneyNotification(notificationId));
+								resolve();
+							},
+						},
+					],
+					{ onDismiss: () => console.log("dismiss") }
+				);
+			} else if (!notification.type.localeCompare("Money Register Deletion")) {
+				dispatch(
+					leaveMoneyRegister(
+						user,
+						notification.moneyRegister.id,
+						availableRegisters
+					)
+				);
+
+				const description = `El registro ${notification.moneyRegister.name} fue eliminado por ${notification.from.name}`;
+
+				Alert.alert(
+					"Nuevo Mensaje!",
+					description,
+					[
+						{
+							text: "Ok",
+							onPress: () => {
+								dispatch(deleteMoneyNotification(notificationId));
+								resolve();
+							},
+						},
+					],
+					{ cancelable: true, onDismiss: () => console.log("dismiss") }
+				);
+			}
 		});
 	};
 

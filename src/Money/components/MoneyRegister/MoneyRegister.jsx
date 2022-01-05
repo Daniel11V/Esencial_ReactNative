@@ -17,7 +17,9 @@ import { STYLES } from "../../../../constants/styles";
 import { COLORS } from "../../../../constants/colors";
 import {
 	createMoneyRegister,
+	deleteMoneyRegister,
 	getMoneyRegister,
+	leaveMoneyRegister,
 	sendMoneyRegisterInvitation,
 } from "../../../../store/actions/money.action";
 import { ParticipantItem } from "../ParticipantItem/ParticipantItem";
@@ -105,7 +107,7 @@ export const MoneyRegister = () => {
 
 			Alert.alert(
 				"Invitación enviada con exito!",
-				"El usuario la debe aceptar en sus notificaciones.",
+				"Aguardando confirmación para añadir al registro.",
 				[{ text: "OK" }]
 			);
 			setModalShare(false);
@@ -115,6 +117,54 @@ export const MoneyRegister = () => {
 			...v,
 			emailToShare: !emailToShare.length,
 		}));
+	};
+
+	const handleLeave = () => {
+		Alert.alert(
+			"Confirmar acción irreversible",
+			`Esta seguro que desea salir del registro "${currentRegister.name}" ?`,
+			[
+				{ text: "Cancelar", style: "cancel" },
+				{ text: "Confirmar", onPress: onLeaveRegister },
+			]
+		);
+	};
+
+	const onLeaveRegister = () => {
+		dispatch(
+			leaveMoneyRegister(
+				user,
+				currentRegisterId,
+				availableRegisters,
+				currentRegister.participants,
+				personalRegisterId
+			)
+		);
+		setModalParticipants(false);
+	};
+
+	const handleDelete = () => {
+		Alert.alert(
+			"Confirmar acción irreversible",
+			`Esta seguro que desea eliminar el registro "${currentRegister.name}" ?`,
+			[
+				{ text: "Cancelar", style: "cancel" },
+				{ text: "Confirmar", onPress: onDeleteRegister },
+			]
+		);
+	};
+
+	const onDeleteRegister = () => {
+		dispatch(
+			deleteMoneyRegister(
+				currentRegisterId,
+				currentRegister,
+				availableRegisters,
+				personalRegisterId,
+				user
+			)
+		);
+		setModalParticipants(false);
 	};
 
 	return (
@@ -226,8 +276,6 @@ export const MoneyRegister = () => {
 					padding: 10,
 					paddingBottom: 20,
 					paddingLeft: 15,
-					// position: "absolute",
-					// right: 0,
 				}}
 				onPress={() => setModalParticipants(true)}
 			>
@@ -270,7 +318,7 @@ export const MoneyRegister = () => {
 						</Text>
 						<ParticipantItem
 							participantInfo={{ title: "Añadir participantes" }}
-							handleClickParticipant={() => setModalShare(true)}
+							handleClick={() => setModalShare(true)}
 							userIsOwner={userIsOwner}
 							isButton={true}
 						/>
@@ -280,7 +328,7 @@ export const MoneyRegister = () => {
 							renderItem={(data) => (
 								<ParticipantItem
 									participantInfo={data.item}
-									handleClickParticipant={handlePressParticipant}
+									handleClick={handlePressParticipant}
 									userIsOwner={userIsOwner}
 								/>
 							)}
@@ -289,23 +337,32 @@ export const MoneyRegister = () => {
 							showsHorizontalScrollIndicator={false}
 							nestedScrollEnabled
 						/>
-						<View
-							style={{
-								borderTopWidth: 1,
-								borderColor: "rgba(0,0,0,0.4)",
-								paddingTop: 5,
-								marginTop: 10,
-							}}
-						>
-							{userIsOwner && (
-								<ParticipantItem
-									participantInfo={{ title: "Eliminar registro de cuentas" }}
-									handleClickParticipant={() => setModalShare(true)}
-									userIsOwner={userIsOwner}
-									isButton={true}
-								/>
-							)}
-						</View>
+						{!!personalRegisterId.localeCompare(currentRegisterId) && (
+							<View
+								style={{
+									borderTopWidth: 1,
+									borderColor: "rgba(0,0,0,0.4)",
+									paddingTop: 5,
+									marginTop: 10,
+								}}
+							>
+								{userIsOwner ? (
+									<ParticipantItem
+										participantInfo={{ title: "Eliminar registro" }}
+										handleClick={handleDelete}
+										userIsOwner={userIsOwner}
+										isButton={true}
+									/>
+								) : (
+									<ParticipantItem
+										participantInfo={{ title: "Salir del registro" }}
+										handleClick={handleLeave}
+										userIsOwner={userIsOwner}
+										isButton={true}
+									/>
+								)}
+							</View>
+						)}
 					</Pressable>
 				</Pressable>
 			</Modal>

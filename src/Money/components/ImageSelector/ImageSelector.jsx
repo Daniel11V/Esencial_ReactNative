@@ -51,7 +51,7 @@ export const ImageSelector = ({
 		if (status !== "granted") {
 			Alert.alert(
 				"Permisos insuficientes",
-				"Necesitamos dar permisos de la cámara para usar la aplicación",
+				"Se necesitan permisos de la cámara para usar la aplicación",
 				[{ text: "Ok" }]
 			);
 			return false;
