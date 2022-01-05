@@ -6,6 +6,7 @@ import {
 	View,
 	SafeAreaView,
 	Alert,
+	RefreshControl,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -21,11 +22,13 @@ import {
 } from "../../../store/actions/money.action";
 import { OperationList } from "../components/OperationList/OperationList";
 import { MoneyRegister } from "../components/MoneyRegister/MoneyRegister";
+import { COLORS } from "../../../constants/colors";
 
 export const MoneyHome = ({ navigation }) => {
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user);
 	const notifications = useSelector((state) => state.money.notifications);
+	const isLoading = useSelector((state) => state.money.loadingFirstView);
 	const availableRegisters = useSelector(
 		(state) => state.money.availableRegisters
 	);
@@ -113,7 +116,18 @@ export const MoneyHome = ({ navigation }) => {
 
 	return (
 		<SafeAreaView>
-			<ScrollView style={STYLES.screenContainer}>
+			<ScrollView
+				style={STYLES.screenContainer}
+				refreshControl={
+					<RefreshControl
+						refreshing={isLoading}
+						onRefresh={() => dispatch(getPersonalRegisterFirstView(user))}
+						progressViewOffset={25}
+						tintColor={COLORS.primary}
+						colors={[COLORS.primary]}
+					/>
+				}
+			>
 				<View style={{ marginBottom: 120 }}>
 					{/* Cambiar usuario de finanzas */}
 					<MoneyRegister />
