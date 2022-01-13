@@ -38,6 +38,14 @@ export const STYLES = StyleSheet.create({
         marginTop: 20,
         marginBottom: 5,
     },
+    userEmail: {
+        fontSize: 13,
+        color: "rgba(0, 0, 0, 0.6)",
+    },
+    userName: {
+        fontSize: 17,
+        color: 'rgba(0, 0, 0, 0.8)',
+    },
     normalText: {
         fontSize: 15,
         color: 'rgba(0, 0, 0, 0.6)',
@@ -166,8 +174,15 @@ export const STYLES = StyleSheet.create({
         backgroundColor: '#fff'
     },
     titleBankImg: {
-        width: 45,
-        height: 45,
+        width: 40,
+        height: 40,
+        borderRadius: 50,
+        marginRight: 10,
+        backgroundColor: '#fff'
+    },
+    tinyParticipantImg: {
+        width: 40,
+        height: 40,
         borderRadius: 50,
         marginRight: 10,
         backgroundColor: '#fff'
@@ -203,5 +218,11 @@ export const STYLES = StyleSheet.create({
     invisible: {
         display: "none",
         opacity: 0,
+    },
+    modal: {
+        backgroundColor: COLORS.tinyGray,
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1,
     },
 });

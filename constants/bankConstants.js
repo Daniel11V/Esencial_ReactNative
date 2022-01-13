@@ -13,6 +13,103 @@ export const BANKS_DEFAULT = {
     }
 }
 
+/*
+
+moneyRegisters = {            // In Firebase
+    [UNIQUE FIREBASE ID]: {
+        name: "Vicky y Yo",
+        participants: {
+            [UNIQUE FIREBASE ID]: {
+                name: user.name,
+                email: user.email,
+                photoUrl: user.photoUrl,
+                accessLevel: 0,
+            },
+        },
+        banks: {...BANKS_DEFAULT}
+        operations: {...OPERATIONS_DEFAULT}
+    },
+}
+
+const user = {     // In Firebase
+    personalMoneyRegisterId = UNIQUE FIREBASE ID
+    availableMoneyRegisters = [
+        {
+            id: UNIQUE FIREBASE ID,
+            name: ''
+        },
+    ]
+}
+
+const user = {
+    isAuth: false,
+    id: '',
+    name: '',
+    email: '',
+    photoUrl: '',
+    accessToken: '',
+}
+
+const money = {
+    availableRegisters: {
+        [moneyRegisterId]: {
+            id: UNIQUE FIREBASE ID,
+            name: ''
+        },
+    }
+    currentRegisterId: '', // UNIQUE FIREBASE ID
+    personalRegisterId: '', // UNIQUE FIREBASE ID
+    currentRegister: {
+        name: '',
+        banks: {},
+        operations: {},
+        participants: {
+            [UNIQUE FIREBASE ID]: {
+                email: user.email,
+                name: user.name,
+                photoUrl: user.photoUrl,
+                accessLevel: 0,
+            },
+        },
+    },
+    notifications: {
+        [UNIQUE FIREBASE ID]: {
+
+        }
+    }
+    loadingFirstView: true,
+}
+
+const ACCESS_LEVEL_WORD = [
+    "Propietario",
+    "Editor",
+    "Lector",
+]
+*/
+
+/*
+
+NOTIFICATIONS = {
+    [UNIQUE FIREBASE ID]: {
+        type: "Invitation to Money Register",
+        moneyRegister: {
+            id: "",
+            name: "",
+            accessLevel: 0,
+        },
+        sendToEmail,
+        from: {
+            name: user.name,
+            email: user.email,
+        }
+    }
+}
+
+
+
+*/
+
+
 export const ACCOUNTS_CATEGORIES = [
     "uso diario",
     "ahorro / inversion",

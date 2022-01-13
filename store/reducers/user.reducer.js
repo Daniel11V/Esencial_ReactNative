@@ -1,21 +1,19 @@
-import { LOAD_AUTH, LOGIN, LOGOUT } from "../actions/user.action"
+import { LOGIN, LOGOUT } from "../actions/user.action"
 
 const initialState = {
-    isAuth: false,
-    id: '',
+    id: '0',    // Loading
     name: '',
     email: '',
     photoUrl: '',
+    accessToken: '',
 }
 
 const UserReducer = (state = initialState, { type, payload }) => {
     switch (type) {
-        case LOAD_AUTH:
-            return { ...payload.userInfo }
         case LOGIN:
-            return { isAuth: true, ...payload.userInfo }
+            return { ...state, ...payload.userInfo }
         case LOGOUT:
-            return { isAuth: false, id: '', name: '', email: '', photoUrl: '' }
+            return { ...initialState }
         default:
             return state
     }

@@ -1,19 +1,15 @@
-import { FoodNavigator } from "./Food/FoodNavigator";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { MoneyNavigator } from "./Money/MoneyNavigator";
 import React from "react";
+import { MoneyNavigator } from "./Money/MoneyNavigator";
+import { FoodNavigator } from "./Food/FoodNavigator";
 import { WatchNavigator } from "./Watch/WatchNavigator";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FilesNavigator } from "./Files/FilesNavigator";
-import { UserNavigator } from "./User/UserNavigator";
 import { HealthNavigator } from "./Health/HealthNavigator";
+import { UserNavigator } from "./User/UserNavigator";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 export const TabNavigator = () => {
 	const Tab = createBottomTabNavigator();
-
-	// const logoutNav = () => {
-	// 	navigation.goBack(null);
-	// };
 
 	return (
 		<Tab.Navigator

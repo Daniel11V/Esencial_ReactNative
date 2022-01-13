@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { STYLES } from "../../../../constants/styles";
 
 export const Banks = ({ navigation }) => {
-	const banks = useSelector((state) => state.money.banks);
+	const banks = useSelector((state) => state.money.currentRegister.banks);
 
 	const openBalance = () => {
 		let totalCurrencies = [];

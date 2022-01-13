@@ -10,8 +10,10 @@ export const OperationDetails = ({ route }) => {
 	const { operationId } = route.params;
 
 	const dispatch = useDispatch();
-	const userId = useSelector((state) => state.user.id);
-	const operation = useSelector((state) => state.money.operations[operationId]);
+	const registerId = useSelector((state) => state.money.currentRegisterId);
+	const operation = useSelector(
+		(state) => state.money.currentRegister.operations[operationId]
+	);
 
 	return (
 		<View style={STYLES.screenContainer}>
@@ -62,7 +64,7 @@ export const OperationDetails = ({ route }) => {
 							updateImage={(newValue) =>
 								dispatch(
 									updateOperation(
-										userId,
+										registerId,
 										operation.creationDate,
 										"photo",
 										newValue

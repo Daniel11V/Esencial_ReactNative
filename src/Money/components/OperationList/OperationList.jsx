@@ -17,9 +17,9 @@ export const OperationList = ({
 	// Aqui se recive a operations y operation.accounts como arrays en vez de objects
 	const operationsFiltered = useSelector((state) =>
 		showOnlyThree
-			? Object.values(state.money.operations).slice(-3)
+			? Object.values(state.money.currentRegister.operations).slice(-3)
 			: filter.bank.length
-			? Object.values(state.money.operations).filter((oper) => {
+			? Object.values(state.money.currentRegister.operations).filter((oper) => {
 					if (oper.type === 1) {
 						if (
 							!oper.accountName.localeCompare(filter.bank) &&
@@ -48,7 +48,7 @@ export const OperationList = ({
 
 					return false;
 			  })
-			: Object.values(state.money.operations)
+			: Object.values(state.money.currentRegister.operations)
 	);
 
 	let loadingFirstView = true;
