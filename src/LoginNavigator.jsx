@@ -38,6 +38,8 @@ const LoginScreen = () => {
 				"630395241807-5a798la0t7ot29iqqbhk6hd8mgb0qlev.apps.googleusercontent.com",
 			androidStandaloneAppClientId:
 				"630395241807-m9q2h9vb4pntte8orbgm6qt373p6pnj8.apps.googleusercontent.com",
+			iosStandaloneAppClientId:
+				"630395241807-pa30r6sthtblp02um0i0hfg76k64m2aq.apps.googleusercontent.com",
 			clientId:
 				"630395241807-m9q2h9vb4pntte8orbgm6qt373p6pnj8.apps.googleusercontent.com",
 			scopes: ["profile", "email"],
