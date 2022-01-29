@@ -28,9 +28,9 @@ export const OperationDetails = ({ route }) => {
 				<Text style={STYLES.normalText}>
 					{new Date(operation.creationDate).toLocaleTimeString("en-US") +
 						"  " +
-						new Date(operation.creationDate).getDate() +
+						((new Date(operation.creationDate).getDate()) >= 10 ? (new Date(operation.creationDate).getDate()) : "0" + (new Date(operation.creationDate).getDate())) +
 						"/" +
-						(new Date(operation.creationDate).getMonth() + 1) +
+						((new Date(operation.creationDate).getMonth() + 1) >= 10 ? (new Date(operation.creationDate).getMonth() + 1) : "0" + (new Date(operation.creationDate).getMonth() + 1) ) +
 						"/" +
 						new Date(operation.creationDate).getFullYear()}
 				</Text>

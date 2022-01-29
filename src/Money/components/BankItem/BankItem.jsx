@@ -67,7 +67,7 @@ export const BankItem = ({ bankInfo, handleClickBank, simplified }) => {
 								fontWeight: "bold",
 							}}
 						>
-							{account.ammount} {account.currency}
+							{(account.ammount)>=1000000000?(Math.trunc(account.ammount/1000000000) + "B"):account.ammount} {account.currency}
 						</Text>
 						{!simplified && account.category ? (
 							<View

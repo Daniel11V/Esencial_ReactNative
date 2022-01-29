@@ -569,6 +569,7 @@ const PayForm = ({ navigation }) => {
 	const [currency, setCurrency] = useState("");
 	const [ammount, setAmmount] = useState(null);
 	const [photo, setPhoto] = useState("");
+	const [pointON, setPointON] = useState(false);
 
 	const [incomplete, setIncomplete] = useState({
 		ammount: false,
@@ -633,7 +634,41 @@ const PayForm = ({ navigation }) => {
 	if (loading) {
 		return <View></View>;
 	}
-
+	
+	const checkValue = (value) => {
+		if(ammount){
+			if(value.length > ammount.length && ammount[ammount.length-3] == "."){
+				return ammount;
+			}
+		}
+		
+		if(value[value.length-1] == "." && value.length > ammount.length && !pointON){
+			setAmmount(value)
+			setPointON(true);	
+			return ammount;
+		}
+		if(ammount){
+			if(ammount[ammount.length-1] == "." && value.length < ammount.length){
+				setAmmount(value)
+				setPointON(false);		
+				return ammount;
+			}
+		}
+		if(value[value.length-1] == "." && value.length < ammount.length){
+			setAmmount(value)
+		}
+		
+		if(value){
+			if(value[value.length-1] !== "." && value[value.length-1] !== "-" && value[value.length-1] !== " " && value[value.length-1] !== ","){
+				setAmmount(value)	
+			}
+		}else{
+			setAmmount(value)
+		}
+		
+		return ammount;
+	}
+	
 	return !enoughAccounts ? (
 		<View
 			style={{
@@ -701,7 +736,7 @@ const PayForm = ({ navigation }) => {
 						selectionColor={COLORS.primary}
 						value={ammount}
 						keyboardType="numeric"
-						onChangeText={(newAmmount) => setAmmount(newAmmount)}
+					    onChangeText={(newAmmount) => checkValue(newAmmount)}
 					/>
 				</View>
 				<Pressable

@@ -32,6 +32,13 @@ export const BankForm = ({ route, navigation }) => {
 	const bank = useSelector(
 		(state) => state.money.currentRegister.banks[insideBank]
 	);
+	const bankNames = useSelector(
+		(state) => Object.keys(state.money.currentRegister.banks)
+	);
+
+	const currencyNames = useSelector(
+		(state) => isNewCurrency? Object.keys(state.money.currentRegister.banks[insideBank].accounts): []
+	);
 	const possibleBanks = useSelector((state) =>
 		BANKS_INFO.filter(
 			(bank) =>
@@ -48,8 +55,8 @@ export const BankForm = ({ route, navigation }) => {
 	const [category, setCategory] = useState("");
 
 	const [incomplete, setIncomplete] = useState({
-		name: false,
-		currency: false,
+		name: '',
+		currency: ''
 	});
 	const possibleCurrencies = isNewCurrency
 		? CURRENCIES.filter(
@@ -67,13 +74,24 @@ export const BankForm = ({ route, navigation }) => {
 	const onAdd = () => {
 		Keyboard.dismiss();
 
-		if (name && currency) {
-			const newName = name === "Otra" ? otherName : name;
+		let alreadyExist;
+		
+		if(isNewCurrency){
+			
+			alreadyExist = otherCurrency? currencyNames.some(name => !name.localeCompare(otherCurrency.toUpperCase())): false;
+		}else{
+			alreadyExist = otherName? bankNames.some(name => !name.localeCompare(otherName)): false;
+		}
+		
+		const newName = name === "Otra" ? otherName : name;
 
 			const newCurrency =
 				currency == "Otra"
 					? otherCurrency.toUpperCase()
 					: currency.toUpperCase();
+		
+		if (newName && newCurrency  && !alreadyExist) {
+			
 
 			dispatch(
 				addOperation(registerId, {
@@ -116,9 +134,29 @@ export const BankForm = ({ route, navigation }) => {
 				navigation.goBack();
 			}
 		} else {
+			let newNameError = "";
+			if(!(name.length > 0)){
+				newNameError = "Campo requerido"
+			}else if(alreadyExist && !isNewCurrency){
+				newNameError = "Nombre en uso"
+			}else if(!(otherName.length > 0) && !isNewCurrency && name === "Otra"){
+				newNameError = "Campo requerido"
+			}
+			
+			let newCurrencyError = "";
+			if(!(currency.length > 0)){
+				newCurrencyError = "Campo requerido"
+			}else if(alreadyExist && isNewCurrency){
+				newCurrencyError = "Nombre en uso"
+			}else if(!(otherCurrency.length > 0) && currency == "Otra"){
+				newCurrencyError = "Campo requerido"
+			}
+
+			
+			
 			setIncomplete({
-				name: !(name.length > 0),
-				currency: !(currency.length > 0),
+				name: newNameError,
+				currency: newCurrencyError,
 			});
 		}
 	};
@@ -177,8 +215,8 @@ export const BankForm = ({ route, navigation }) => {
 					/>
 				)}
 
-				{incomplete.name && (
-					<Text style={STYLES.incompleteInput}>Campo Requerido</Text>
+				{incomplete.name.length > 0 &&  (
+					<Text style={STYLES.incompleteInput}>{incomplete.name}</Text>
 				)}
 
 				<Pressable
@@ -217,8 +255,8 @@ export const BankForm = ({ route, navigation }) => {
 						onChangeText={(newCurr) => setOtherCurrency(newCurr)}
 					/>
 				)}
-				{incomplete.currency && (
-					<Text style={STYLES.incompleteInput}>Campo Requerido</Text>
+				{incomplete.currency.length > 0 && (
+					<Text style={STYLES.incompleteInput}>{incomplete.currency}</Text>
 				)}
 				<View
 					style={{
@@ -238,6 +276,7 @@ export const BankForm = ({ route, navigation }) => {
 						onChangeText={(newAmmount) => setAmmount(newAmmount)}
 					/>
 				</View>
+				
 				<Pressable
 					style={STYLES.pickerInput}
 					onPress={() => pickerCategory.current.focus()}

@@ -19,8 +19,10 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 		(date.getMinutes() < 10 ? "0" : "") +
 		date.getMinutes() +
 		"  " +
+		(date.getDate() < 10 ? "0" : "") +
 		date.getDate() +
 		"/" +
+		(date.getMonth() + 1 < 10 ? "0" : "") +
 		(date.getMonth() + 1) +
 		"/" +
 		date.getFullYear();
@@ -78,7 +80,7 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 							}}
 						>
 							{operationInfo.type === 1
-								? operationInfo.initialAmmount
+								? (operationInfo.initialAmmount )>=1000000000?(Math.trunc(operationInfo.initialAmmount/1000000000) + "B"):operationInfo.initialAmmount 
 								: 0 - operationInfo.finalAmmount}{" "}
 							{operationInfo.currencyName}
 						</Text>
@@ -96,7 +98,7 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 								marginBottom: -5,
 							}}
 						>
-							{operationInfo.sendTo.ammount} {operationInfo.sendTo.currency}
+					 		{(operationInfo.sendTo.ammount)>=1000000000?(Math.trunc(operationInfo.sendTo.ammount/1000000000) + "B"):operationInfo.sendTo.ammount} {operationInfo.sendTo.currency}
 						</Text>
 						<Text style={{ ...STYLES.normalText, marginBottom: 5 }}>
 							{operationInfo.sendTo.name}
@@ -112,7 +114,7 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 								marginBottom: -5,
 							}}
 						>
-							-{operationInfo.from.ammount} {operationInfo.from.currency}
+							-{(operationInfo.from.ammount)>=1000000000?(Math.trunc(operationInfo.from.ammount/1000000000) + "B"):operationInfo.from.ammount} {operationInfo.from.currency}
 						</Text>
 						<Text style={{ ...STYLES.normalText }}>
 							{operationInfo.from.name}
