@@ -3,10 +3,14 @@ import {
 	Animated,
 	Image,
 	Pressable,
+	SafeAreaView,
 	ScrollView,
 	Text,
 	View,
 } from "react-native";
+import {
+	AdMobBanner
+  } from 'expo-ads-admob';
 import React, { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Picker } from "@react-native-picker/picker";
@@ -109,6 +113,13 @@ export const BankDetails = ({ route, navigation }) => {
 	};
 
 	return (
+		<SafeAreaView style={{flex: 1 }}>
+		<AdMobBanner
+				style={{height:60}}
+				bannerSize="fullBanner"
+				testDeviceId="EMULATOR"
+				adUnitID="ca-app-pub-3940256099942544/6300978111"   // 1027615916432065/3076638211
+				onDidFailToReceiveAdWithError={(e) => alert(e)} />
 		<ScrollView style={{ ...STYLES.screenContainer, flex: 1 }}>
 			<View style={{ ...STYLES.row, justifyContent: "flex-start" }}>
 				<Image
@@ -228,5 +239,6 @@ export const BankDetails = ({ route, navigation }) => {
 				/>
 			</Animated.View>
 		</ScrollView>
+		</SafeAreaView>
 	);
 };

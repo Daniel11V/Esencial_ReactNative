@@ -8,6 +8,9 @@ import {
 	TextInput,
 	View,
 } from "react-native";
+import {
+	AdMobBanner
+  } from 'expo-ads-admob';
 import React, { useEffect, useRef, useState } from "react";
 import {
 	addOperation,

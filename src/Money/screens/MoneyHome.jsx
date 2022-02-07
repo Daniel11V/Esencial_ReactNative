@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
+	AdMobBanner
+  } from 'expo-ads-admob';
+import {
 	Pressable,
 	Text,
 	ScrollView,
@@ -115,7 +118,13 @@ export const MoneyHome = ({ navigation }) => {
 	};
 
 	return (
-		<SafeAreaView>
+		<SafeAreaView style={{flex:1}}> 
+			<AdMobBanner
+				style={{height:60}}
+				bannerSize="fullBanner"
+				testDeviceId="EMULATOR"
+				adUnitID="ca-app-pub-3940256099942544/6300978111"   // 1027615916432065/3076638211
+				onDidFailToReceiveAdWithError={(e) => alert(e)} />
 			<ScrollView
 				style={STYLES.screenContainer}
 				refreshControl={
@@ -128,7 +137,9 @@ export const MoneyHome = ({ navigation }) => {
 					/>
 				}
 			>
+				
 				<View style={{ marginBottom: 120 }}>
+				
 					{/* Cambiar usuario de finanzas */}
 					<MoneyRegister />
 					{/* Cuentas de uso diario */}

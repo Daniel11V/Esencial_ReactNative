@@ -6,8 +6,9 @@ export const STYLES = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 15,
         width: "100%",
-        minHeight: "100%",
+        // minHeight: "100%",
         backgroundColor: COLORS.backgroundScreen,
+        flex:1
     },
     row: {
         flexDirection: "row",

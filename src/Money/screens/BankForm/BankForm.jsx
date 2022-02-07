@@ -7,6 +7,9 @@ import {
 	TextInput,
 	View,
 } from "react-native";
+import {
+	AdMobBanner
+  } from 'expo-ads-admob';
 import React, { useRef, useState } from "react";
 import {
 	addAccount,
@@ -163,11 +166,17 @@ export const BankForm = ({ route, navigation }) => {
 
 	return (
 		<SafeAreaView
-			style={{ ...STYLES.screenContainer, flex: 1 }}
+			style={{  flex: 1 }}
 			forceInset="top"
 		>
+			<AdMobBanner
+				style={{height:60}}
+				bannerSize="fullBanner"
+				testDeviceId="EMULATOR"
+				adUnitID="ca-app-pub-3940256099942544/6300978111"   // 1027615916432065/3076638211
+				onDidFailToReceiveAdWithError={(e) => alert(e)} />
 			<ScrollView
-				style={{ height: "100%" }}
+				style={{ height: "100%", ...STYLES.screenContainer}}
 				keyboardShouldPersistTaps="handled"
 			>
 				{isNewCurrency ? (

@@ -19,7 +19,8 @@
 		"ios": {
 			"bundleIdentifier": "com.esencial.esencial",
 			"buildNumber": "1.0.0",
-			"supportsTablet": true
+			"supportsTablet": true,
+			"config": {"googleMobileAdsAppId": "ca-app-pub-1027615916432065~1673408276"}
 		},
 		"android": {
 			"package": "com.esencial.esencial",
@@ -28,7 +29,8 @@
 				"foregroundImage": "./assets/adaptive-icon.png",
 				"backgroundColor": "#FFFFFF"
 			},
-			"permissions": ["CAMERA", "WRITE_EXTERNAL_STORAGE"]
+			"permissions": ["CAMERA", "WRITE_EXTERNAL_STORAGE"],
+			"config": {"googleMobileAdsAppId": "ca-app-pub-1027615916432065~1673408276"}
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"

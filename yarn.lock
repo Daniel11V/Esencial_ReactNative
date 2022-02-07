@@ -3090,6 +3090,13 @@
     "snapdragon" "^0.8.1"
     "to-regex" "^3.0.1"
 
+"expo-ads-admob@^12.0.1":
+  "integrity" "sha512-9sS53ymUbk1yx0IOqDuqa3pQMGP7CaeFEMOIY/MT38Kwmjc5bDTU5oJE+nl4PAu4zEWsYwXiQ5BaeYvTFqGbAA=="
+  "resolved" "https://registry.npmjs.org/expo-ads-admob/-/expo-ads-admob-12.0.1.tgz"
+  "version" "12.0.1"
+  dependencies:
+    "@expo/config-plugins" "^4.0.2"
+
 "expo-app-auth@~11.0.3":
   "integrity" "sha512-vw6rWfrVAKFaDB/VShEZYH/Vsd2dYp5BS4Vuq3UARDlrCNwNumO8AualmffTc42k13RTBlKhGoaxUaol/UiTUA=="
   "resolved" "https://registry.npmjs.org/expo-app-auth/-/expo-app-auth-11.0.3.tgz"
@@ -3273,7 +3280,7 @@
     "resolve-from" "^5.0.0"
     "uuid" "^3.4.0"
 
-"expo@~43.0.2":
+"expo@*", "expo@~43.0.2":
   "integrity" "sha512-X4lLvoUuUbjj1n3DOjZ+w9TfNbEvNMRWvbOzYNYwS4FMB04Gt2RvQYYP8mXWbBZz0+b/s/Q+u67jj0+LMdxyfg=="
   "resolved" "https://registry.npmjs.org/expo/-/expo-43.0.3.tgz"
   "version" "43.0.3"

@@ -1,5 +1,7 @@
-import { Alert, Pressable, SafeAreaView, Text, View } from "react-native";
-
+import { Alert, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import {
+	AdMobBanner
+  } from 'expo-ads-admob';
 import { BankList } from "../../components/BankList/BankList";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -46,27 +48,35 @@ export const Banks = ({ navigation }) => {
 
 	return (
 		<SafeAreaView
-			style={{ ...STYLES.screenContainer, flex: 1 }}
+			style={{ flex: 1 }}
 			forceInset="top"
 		>
-			<View style={STYLES.boxesContainer}>
-				<Pressable onPress={openBalance} style={STYLES.btnSecondaryMiddle}>
-					<Text style={STYLES.btnSecondaryText}>Saldo Total</Text>
-				</Pressable>
-				<Pressable
-					onPress={() => navigation.push("BankForm")}
-					style={{
-						...STYLES.btnSecondaryMiddle,
-					}}
-				>
-					<Text style={STYLES.btnSecondaryText}>Añadir cuenta</Text>
-				</Pressable>
+			<AdMobBanner
+				style={{height:60}}
+				bannerSize="fullBanner"
+				testDeviceId="EMULATOR"
+				adUnitID="ca-app-pub-3940256099942544/6300978111"   // 1027615916432065/3076638211
+				onDidFailToReceiveAdWithError={(e) => alert(e)} />
+			<View style={{ ...STYLES.screenContainer}}>
+				<View style={STYLES.boxesContainer}>
+					<Pressable onPress={openBalance} style={STYLES.btnSecondaryMiddle}>
+						<Text style={STYLES.btnSecondaryText}>Saldo Total</Text>
+					</Pressable>
+					<Pressable
+						onPress={() => navigation.push("BankForm")}
+						style={{
+							...STYLES.btnSecondaryMiddle,
+						}}
+					>
+						<Text style={STYLES.btnSecondaryText}>Añadir cuenta</Text>
+					</Pressable>
+				</View>
+				<BankList
+					handleClickBank={(bankName) =>
+						navigation.push("BankDetails", { bankName })
+					}
+				/>
 			</View>
-			<BankList
-				handleClickBank={(bankName) =>
-					navigation.push("BankDetails", { bankName })
-				}
-			/>
 		</SafeAreaView>
 	);
 };
