@@ -56,7 +56,7 @@ export const Banks = ({ navigation }) => {
 				bannerSize="fullBanner"
 				testDeviceId="EMULATOR"
 				adUnitID="ca-app-pub-3940256099942544/6300978111"   // 1027615916432065/3076638211
-				onDidFailToReceiveAdWithError={(e) => alert(e)} />
+				onDidFailToReceiveAdWithError={(e) => console.log(e)} />
 			<View style={{ ...STYLES.screenContainer}}>
 				<View style={STYLES.boxesContainer}>
 					<Pressable onPress={openBalance} style={STYLES.btnSecondaryMiddle}>
