@@ -118,13 +118,14 @@ export const MoneyHome = ({ navigation }) => {
 	};
 
 	return (
-		<SafeAreaView style={{flex:1}}> 
+		<SafeAreaView style={{ flex: 1 }}>
 			<AdMobBanner
-				style={{height:60}}
+				style={{ height: 60 }}
 				bannerSize="fullBanner"
 				testDeviceId="EMULATOR"
-				adUnitID="ca-app-pub-3940256099942544/6300978111"   // 1027615916432065/3076638211
-				onDidFailToReceiveAdWithError={(e) => console.log(e)} />
+				adUnitID="ca-app-pub-3940256099942544/6300978111" // 1027615916432065/3076638211
+				onDidFailToReceiveAdWithError={(e) => console.log(e)}
+			/>
 			<ScrollView
 				style={STYLES.screenContainer}
 				refreshControl={
@@ -137,9 +138,7 @@ export const MoneyHome = ({ navigation }) => {
 					/>
 				}
 			>
-				
 				<View style={{ marginBottom: 120 }}>
-				
 					{/* Cambiar usuario de finanzas */}
 					<MoneyRegister />
 					{/* Cuentas de uso diario */}
@@ -180,7 +179,7 @@ export const MoneyHome = ({ navigation }) => {
 				style={STYLES.actionBoxFixed}
 			>
 				<Pressable
-					onPress={() => navigation.push("OperationForm")}
+					onPress={() => navigation.push("OperationFormNavigator")}
 					style={{ ...STYLES.btnPrimary, borderRadius: 50, elevation: 4 }}
 				>
 					<Text style={STYLES.btnPrimaryText}>Realizar operación</Text>
