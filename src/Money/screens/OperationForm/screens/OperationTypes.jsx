@@ -22,25 +22,23 @@ export const OperationTypes = ({ navigation }) => {
 	};
 
 	const changeType = (newType) => {
+		setType(newType);
 		Animated.timing(opacityAnimation[newType], {
 			toValue: 0.5,
 			duration: 100,
 			useNativeDriver: true,
 		}).start(() => {
-			setType(newType);
-
+			nextStep(newType);
 			Animated.timing(opacityAnimation[newType], {
 				toValue: 1,
 				duration: 300,
 				useNativeDriver: true,
 			}).start();
 		});
-
-		nextStep();
 	};
 
-	const nextStep = () => {
-		if (!type.localeCompare("Ingreso")) {
+	const nextStep = (newType = type) => {
+		if (!newType.localeCompare("Ingreso")) {
 			navigation.push("OperationSendToAccount");
 		} else {
 			navigation.push("OperationFromAccount");
@@ -55,68 +53,80 @@ export const OperationTypes = ({ navigation }) => {
 			<ScrollView
 				style={{ height: "100%" }}
 				keyboardShouldPersistTaps="handled"
+				contentContainerStyle={{ flexGrow: 1 }}
 			>
-				<Pressable
-					onPress={() => changeType("Movimiento")}
-					style={{
-						...(type == "Movimiento"
-							? STYLES.btnSecondary
-							: STYLES.roundedItem),
-						paddingHorizontal: 10,
-						paddingVertical: 10,
-					}}
-				>
-					<Text
-						style={{
-							...STYLES.bigText,
-							fontWeight: "bold",
-							...(type == "Movimiento" && { color: COLORS.primary }),
-						}}
-					>
-						Movimiento entre mis cuentas
-					</Text>
-				</Pressable>
-				<View style={STYLES.boxesContainer}>
+				<View style={{ flex: 1, justifyContent: "center" }}>
 					<Pressable
-						onPress={() => changeType("Ingreso")}
-						style={{
-							...(type == "Ingreso"
-								? STYLES.btnSecondaryMiddle
-								: STYLES.roundedItemMiddle),
-							paddingHorizontal: 10,
-							paddingVertical: 10,
-						}}
+						onPress={() => changeType("Movimiento")}
+						style={({ pressed }) => [
+							{
+								...(type == "Movimiento"
+									? STYLES.btnSecondary
+									: STYLES.roundedItem),
+								paddingHorizontal: 10,
+								paddingVertical: 10,
+								opacity: pressed ? 0.3 : 1,
+							},
+						]}
 					>
 						<Text
 							style={{
 								...STYLES.bigText,
 								fontWeight: "bold",
-								...(type == "Ingreso" && { color: COLORS.primary }),
+								...(type == "Movimiento" && { color: COLORS.primary }),
 							}}
 						>
-							Ingreso
+							Movimiento entre mis cuentas
 						</Text>
 					</Pressable>
-					<Pressable
-						onPress={() => changeType("Pago")}
-						style={{
-							...(type == "Pago"
-								? STYLES.btnSecondaryMiddle
-								: STYLES.roundedItemMiddle),
-							paddingHorizontal: 10,
-							paddingVertical: 10,
-						}}
-					>
-						<Text
-							style={{
-								...STYLES.bigText,
-								fontWeight: "bold",
-								...(type == "Pago" && { color: COLORS.primary }),
-							}}
+					<View style={STYLES.boxesContainer}>
+						<Pressable
+							onPress={() => changeType("Ingreso")}
+							style={({ pressed }) => [
+								{
+									...(type == "Ingreso"
+										? STYLES.btnSecondaryMiddle
+										: STYLES.roundedItemMiddle),
+									paddingHorizontal: 10,
+									paddingVertical: 10,
+									opacity: pressed ? 0.3 : 1,
+								},
+							]}
 						>
-							Pago
-						</Text>
-					</Pressable>
+							<Text
+								style={{
+									...STYLES.bigText,
+									fontWeight: "bold",
+									...(type == "Ingreso" && { color: COLORS.primary }),
+								}}
+							>
+								Ingreso
+							</Text>
+						</Pressable>
+						<Pressable
+							onPress={() => changeType("Pago")}
+							style={({ pressed }) => [
+								{
+									...(type == "Pago"
+										? STYLES.btnSecondaryMiddle
+										: STYLES.roundedItemMiddle),
+									paddingHorizontal: 10,
+									paddingVertical: 10,
+									opacity: pressed ? 0.3 : 1,
+								},
+							]}
+						>
+							<Text
+								style={{
+									...STYLES.bigText,
+									fontWeight: "bold",
+									...(type == "Pago" && { color: COLORS.primary }),
+								}}
+							>
+								Pago
+							</Text>
+						</Pressable>
+					</View>
 				</View>
 				<NavigationButtons
 					navigation={navigation}

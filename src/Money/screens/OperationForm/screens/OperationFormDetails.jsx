@@ -1,26 +1,27 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext } from "react";
 import {
-	Animated,
-	Pressable,
+	Keyboard,
 	SafeAreaView,
 	ScrollView,
-	Text,
+	TextInput,
 	View,
 } from "react-native";
-import { STYLES } from "../../../../../constants/styles";
 import { COLORS } from "../../../../../constants/colors";
+import { STYLES } from "../../../../../constants/styles";
+import { ImageSelector } from "../../../components/ImageSelector/ImageSelector";
 import { NavigationButtons } from "../components/NavigationButtons";
 import { OperationFormContext } from "../context/OperationFormContextProvider";
 
-export const OperationFormDetails = ({ navigation }) => {
-	const { type, setType } = useContext(OperationFormContext);
+export const OperationFormDetails = ({ navigation, route }) => {
+	const { moneyNavigation } = route.params;
+
+	const { title, setTitle, photo, setPhoto, uploadOperation } =
+		useContext(OperationFormContext);
 
 	const nextStep = () => {
-		if (!type.localeCompare("Ingreso")) {
-			navigation.push("OperationSendToAccount");
-		} else {
-			navigation.push("OperationFromAccount");
-		}
+		Keyboard.dismiss();
+		uploadOperation();
+		moneyNavigation.goBack();
 	};
 
 	return (
@@ -31,8 +32,27 @@ export const OperationFormDetails = ({ navigation }) => {
 			<ScrollView
 				style={{ height: "100%" }}
 				keyboardShouldPersistTaps="handled"
+				contentContainerStyle={{ flexGrow: 1 }}
 			>
-				<NavigationButtons navigation={navigation} nextStep={nextStep} />
+				<View style={{ flex: 1, justifyContent: "center" }}>
+					<TextInput
+						placeholder="Titulo / Motivo de la operación"
+						style={{ ...STYLES.textInput, marginTop: 20 }}
+						maxLength={65}
+						selectionColor={COLORS.primary}
+						value={title}
+						onChangeText={(text) => setTitle(text)}
+					/>
+					<ImageSelector
+						updateImage={(image) => setPhoto(image)}
+						storedPhoto={photo}
+					/>
+				</View>
+				<NavigationButtons
+					navigation={navigation}
+					nextStep={nextStep}
+					lastStep
+				/>
 			</ScrollView>
 		</SafeAreaView>
 	);

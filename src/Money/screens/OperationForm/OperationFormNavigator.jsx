@@ -12,9 +12,9 @@ export const OperationFormNavigator = ({ navigation }) => {
 	return (
 		<OperationFormContextProvider>
 			<Stack.Navigator
-				initialRouteName="OperationTypes"
 				screenOptions={{
 					headerShown: false,
+					animation: "slide_from_right",
 				}}
 			>
 				<Stack.Screen name="OperationTypes" component={OperationTypes} />
@@ -25,10 +25,12 @@ export const OperationFormNavigator = ({ navigation }) => {
 				<Stack.Screen
 					name="OperationSendToAccount"
 					component={OperationSendToAccount}
+					initialParams={{ fromName: "", fromCurrency: "" }}
 				/>
 				<Stack.Screen
 					name="OperationFormDetails"
 					component={OperationFormDetails}
+					initialParams={{ moneyNavigation: navigation }}
 				/>
 			</Stack.Navigator>
 		</OperationFormContextProvider>
