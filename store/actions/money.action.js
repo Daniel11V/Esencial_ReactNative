@@ -290,32 +290,11 @@ export const deleteMoneyRegister = (registerId, register, availableRegisters, pe
             if (snapshot.exists()) {
                 snapshot.forEach((childSnapshot) => {
                     const notification = childSnapshot.val();
-                    if (!notification.moneyRegister.id.localeCompare(registerId)) {
+                    if (!notification.moneyRegister.id.localeCompare(registerId) &&
+                        !!notification.type.localeCompare("Money Register Deletion")) {
                         remove(ref(db, `moneyNotifications/${childSnapshot.key}`));
                     }
                 });
-
-
-                // Enviar notificacion a participantes para que quiten el 
-                // registro de availableMoneyRegisters
-                for (let participant of Object.values(register.participants)) {
-                    if (!participant.email.includes(user.email)) {
-                        const newNotification = {
-                            type: "Money Register Deletion",
-                            moneyRegister: {
-                                id: registerId,
-                                name: register.name,
-                            },
-                            sendToEmail: participant.email,
-                            from: {
-                                name: user.name,
-                                email: user.email,
-                            }
-                        }
-
-                        set(push(ref(db, `moneyNotifications`)), newNotification);
-                    }
-                }
             }
         }, {
             onlyOnce: true
@@ -323,6 +302,27 @@ export const deleteMoneyRegister = (registerId, register, availableRegisters, pe
 
         // Borrar MoneyRegister
         remove(ref(db, `moneyRegisters/${registerId}`));
+
+        // Enviar notificacion a participantes para que quiten el 
+        // registro de availableMoneyRegisters
+        for (let participant of Object.values(register.participants)) {
+            if (!participant.email.includes(user.email)) {
+                const newNotification = {
+                    type: "Money Register Deletion",
+                    moneyRegister: {
+                        id: registerId,
+                        name: register.name,
+                    },
+                    sendToEmail: participant.email,
+                    from: {
+                        name: user.name,
+                        email: user.email,
+                    }
+                }
+
+                set(push(ref(db, `moneyNotifications`)), newNotification);
+            }
+        }
 
         // Actualizar mis availableRegisters
         let newAvailableRegisters = JSON.parse(JSON.stringify(availableRegisters))

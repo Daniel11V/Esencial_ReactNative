@@ -26,7 +26,7 @@ export const MoneyNavigator = () => {
 			<Stack.Screen
 				name="BankDetails"
 				component={BankDetails}
-				options={{ title: "Detalle de Cuentas" }}
+				options={{ title: "Detalle de Cuenta" }}
 				initialParams={{ bankName: "Efectivo", hasNewCurrency: null }}
 			/>
 			<Stack.Screen
