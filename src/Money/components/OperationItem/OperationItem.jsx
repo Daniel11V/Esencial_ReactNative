@@ -77,6 +77,7 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 					alignItems: "flex-end",
 					alignSelf: "flex-start",
 					flex: 1,
+					marginLeft: 15,
 				}}
 			>
 				{!!(isCreacionCuenta || isCierreCuenta) && (
