@@ -439,7 +439,7 @@ export const addOperation = (registerId, operationInfo) => {
 
         let operationInfoFinal = JSON.parse(JSON.stringify(operationInfo))
 
-        if (operationInfoFinal.photo.length) {
+        if (operationInfoFinal.photo?.length) {
 
             let Path = ""
             if (operationInfoFinal.photo?.length > 0) {

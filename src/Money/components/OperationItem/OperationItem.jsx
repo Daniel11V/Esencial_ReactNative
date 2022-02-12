@@ -5,12 +5,6 @@ import { STYLES } from "../../../../constants/styles";
 
 export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 	const date = new Date(operationInfo.creationDate);
-	const printCategoryWord = !!(
-		operationInfo.type !== 0 &&
-		operationInfo.type !== 1 &&
-		operationInfo.type !== 3 &&
-		operationInfo.title?.length
-	);
 
 	const completeDate =
 		(date.getHours() < 10 ? "0" : "") +
@@ -27,50 +21,65 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 		"/" +
 		date.getFullYear();
 
+	const isLoading = operationInfo.type === -1;
+	// const isInicioRegistro = operationInfo.type === 0;
+	const isCreacionCuenta = operationInfo.type === 1;
+	const isMovimiento = operationInfo.type === 2;
+	const isCierreCuenta = operationInfo.type === 3;
+	// const isIngreso = operationInfo.type === 4;
+	// const isPago = operationInfo.type === 5;
+
+	const isTransactionWithSameAmmount =
+		isMovimiento &&
+		!operationInfo.from.currency.localeCompare(operationInfo.sendTo.currency) &&
+		operationInfo.from.ammount === operationInfo.sendTo.ammount;
+
+	const stringAmmount = (ammount) =>
+		ammount >= 1000000000 ? Math.trunc(ammount / 1000000000) + "B" : ammount;
+
 	return (
 		<TouchableOpacity
-			style={{ ...STYLES.roundedItem, ...STYLES.row, paddingVertical: 5 }}
+			style={{
+				...STYLES.roundedItem,
+				...STYLES.row,
+				paddingVertical: 5,
+			}}
 			onPress={() => handleClickOperation(operationInfo.creationDate)}
-			disabled={operationInfo.type === -1}
+			disabled={isLoading}
 		>
 			<View
 				style={{
 					alignSelf: "stretch",
 					justifyContent: "flex-start",
-					maxWidth: operationInfo.type !== -1 ? "60%" : "100%",
+					maxWidth: !isLoading ? "60%" : "100%",
 				}}
 			>
-				{!!operationInfo.title?.length && (
-					<Text
-						style={{
-							...STYLES.bigText,
-							marginBottom: 0,
-						}}
-					>
-						{operationInfo.title}
+				<Text
+					style={{
+						...STYLES.bigText,
+						marginBottom: 0,
+					}}
+				>
+					{operationInfo.title?.length
+						? operationInfo.title
+						: OPERATIONS_TYPES[operationInfo.type]}
+				</Text>
+				{!isLoading && (
+					<Text style={{ ...STYLES.normalText, fontSize: 13 }}>
+						{completeDate}
 					</Text>
 				)}
-				{operationInfo.type !== -1 && (
-					<View>
-						<Text
-							style={{
-								...(operationInfo.title?.length
-									? STYLES.normalText
-									: STYLES.bigText),
-								marginBottom: 2,
-							}}
-						>
-							{printCategoryWord && "Categoria "}
-							{OPERATIONS_TYPES[operationInfo.type]}
-						</Text>
-						<Text style={{ ...STYLES.normalText, fontSize: 13 }}>
-							{completeDate}
-						</Text>
-					</View>
-				)}
 			</View>
-			<View style={{ alignItems: "flex-end", alignSelf: "flex-start" }}>
-				{(operationInfo.type === 1 || operationInfo.type === 3) && (
+
+			{/* Moneda */}
+			<View
+				style={{
+					alignItems: "flex-end",
+					alignSelf: "flex-start",
+					flex: 1,
+				}}
+			>
+				{!!(isCreacionCuenta || isCierreCuenta) && (
 					<View style={{ alignItems: "flex-end" }}>
 						<Text
 							style={{
@@ -79,17 +88,59 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 								marginBottom: -5,
 							}}
 						>
-							{operationInfo.type === 1
-								? (operationInfo.initialAmmount )>=1000000000?(Math.trunc(operationInfo.initialAmmount/1000000000) + "B"):operationInfo.initialAmmount 
+							{isCreacionCuenta
+								? stringAmmount(operationInfo.initialAmmount)
 								: 0 - operationInfo.finalAmmount}{" "}
 							{operationInfo.currencyName}
 						</Text>
-						<Text style={{ ...STYLES.normalText }}>
-							{operationInfo.accountName}
-						</Text>
+						<Text style={STYLES.normalText}>{operationInfo.accountName}</Text>
 					</View>
 				)}
-				{(operationInfo.type === 2 || operationInfo.type === 4) && (
+				{!!operationInfo.sendTo?.name?.length && (
+					<View
+						style={{
+							alignItems: "flex-end",
+						}}
+					>
+						<Text
+							style={{
+								...STYLES.bigText,
+								fontWeight: "bold",
+								marginBottom: -5,
+							}}
+						>
+							{stringAmmount(operationInfo.sendTo.ammount)}{" "}
+							{operationInfo.sendTo.currency}
+						</Text>
+						<View
+							style={{
+								flexDirection: "row",
+								flexWrap: "wrap",
+								justifyContent: "flex-end",
+							}}
+						>
+							{!!isTransactionWithSameAmmount && (
+								<>
+									<Text style={STYLES.normalText}>
+										{operationInfo.from.name}
+									</Text>
+									<Text style={STYLES.normalText}>{" -> "}</Text>
+								</>
+							)}
+							<Text
+								style={{
+									...STYLES.normalText,
+									marginBottom: 5,
+								}}
+							>
+								{operationInfo.sendTo.name}
+							</Text>
+						</View>
+					</View>
+				)}
+				{!!(
+					operationInfo.from?.name?.length && !isTransactionWithSameAmmount
+				) && (
 					<View style={{ alignItems: "flex-end" }}>
 						<Text
 							style={{
@@ -98,23 +149,9 @@ export const OperationItem = ({ operationInfo, handleClickOperation }) => {
 								marginBottom: -5,
 							}}
 						>
-					 		{(operationInfo.sendTo.ammount)>=1000000000?(Math.trunc(operationInfo.sendTo.ammount/1000000000) + "B"):operationInfo.sendTo.ammount} {operationInfo.sendTo.currency}
-						</Text>
-						<Text style={{ ...STYLES.normalText, marginBottom: 5 }}>
-							{operationInfo.sendTo.name}
-						</Text>
-					</View>
-				)}
-				{(operationInfo.type === 2 || operationInfo.type === 5) && (
-					<View style={{ alignItems: "flex-end" }}>
-						<Text
-							style={{
-								...STYLES.bigText,
-								fontWeight: "bold",
-								marginBottom: -5,
-							}}
-						>
-							-{(operationInfo.from.ammount)>=1000000000?(Math.trunc(operationInfo.from.ammount/1000000000) + "B"):operationInfo.from.ammount} {operationInfo.from.currency}
+							{"-"}
+							{stringAmmount(operationInfo.from.ammount)}{" "}
+							{operationInfo.from.currency}
 						</Text>
 						<Text style={{ ...STYLES.normalText }}>
 							{operationInfo.from.name}

@@ -34,7 +34,7 @@ export const MoneyAccountInput = ({
 	const pickerCurrency = useRef();
 
 	useEffect(() => {
-		if (completeBankList) {
+		if (completeBankList !== BANKS_DEFAULT) {
 			if (fromName.length) {
 				const fromBankListCopy = JSON.parse(JSON.stringify(completeBankList));
 				delete fromBankListCopy[fromName].accounts[fromCurrency];
