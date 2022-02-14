@@ -75,7 +75,7 @@ const OperationFormContextProvider = (props) => {
 		}
 
 		if (isIncome || isMovement) {
-			const lastAmmount = bankList[fromName].accounts[fromCurrency].ammount;
+			const lastAmmount = bankList[sendToName].accounts[sendToCurrency].ammount;
 
 			dispatch(
 				updateAccount(
