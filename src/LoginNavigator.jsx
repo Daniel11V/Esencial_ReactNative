@@ -17,6 +17,7 @@ import { StatusBar } from "expo-status-bar";
 
 // import * as Google from "expo-google-app-auth";
 import * as GoogleSignIn from "expo-google-sign-in";
+import { getAuth, signInWithCustomToken } from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
 import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -72,6 +73,20 @@ const LoginScreen = () => {
 		setMessageType(type);
 	};
 
+	function signInOnFirebase(googleUser) {
+		const auth = getAuth();
+		signInWithCustomToken(auth, googleUser.auth.accessToken)
+			.then((userCredential) => {
+				// Signed in
+				const user = userCredential.user;
+				// ...
+			})
+			.catch((error) => {
+				console.warn("Error in Sign In on Firebase");
+				console.warn(error.code, error.message);
+			});
+	}
+
 	const syncUserWithStateAsync = async () => {
 		const user = await GoogleSignIn.signInSilentlyAsync();
 		if (user) {
@@ -98,6 +113,9 @@ const LoginScreen = () => {
 			const { type, user } = await GoogleSignIn.signInAsync();
 			if (type === "success") {
 				handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
+
+				signInOnFirebase(user);
+
 				syncUserWithStateAsync();
 			} else {
 				handleMessage("Inicio de sesion cancelado.");
