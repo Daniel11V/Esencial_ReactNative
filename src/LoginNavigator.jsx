@@ -126,40 +126,34 @@ const LoginScreen = () => {
 		setMessageType(type);
 	};
 
-	const syncUserWithStateAsync = async () => {
-		const user = await GoogleSignIn.signInSilentlyAsync();
-		if (user) {
-			const { uid, email, displayName, photoURL, auth } = user;
-			persistLogin(
-				{
-					id: uid,
-					accessToken: auth.accessToken,
-					email,
-					name: displayName,
-					photoUrl: photoURL,
-				},
-				message,
-				"SUCCESS"
-			);
-		}
-	};
-
 	const manualLogin = async () => {
 		setGoogleLoading(true);
 
 		try {
 			await GoogleSignIn.askForPlayServicesAsync();
 			const { type, user } = await GoogleSignIn.signInAsync();
-			const { email, uid } = user;
-			console.log("user: ", user);
+
 			if (type === "success") {
 				console.log("GoogleAuth: successful");
+
+				const { uid, email, displayName, photoURL, auth } = user;
 
 				await FirebaseAuth(email, uid);
 				console.log("FirebaseAuth: successful");
 
 				handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
-				await syncUserWithStateAsync();
+
+				persistLogin(
+					{
+						id: uid,
+						accessToken: auth.accessToken,
+						email,
+						name: displayName,
+						photoUrl: photoURL,
+					},
+					message,
+					"SUCCESS"
+				);
 
 				console.log("ManualLogin: successful");
 			} else {

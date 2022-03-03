@@ -7,9 +7,7 @@ import {
 	TextInput,
 	View,
 } from "react-native";
-import {
-	AdMobBanner
-  } from 'expo-ads-admob';
+
 import React, { useRef, useState } from "react";
 import {
 	addAccount,
@@ -26,6 +24,7 @@ import {
 	ACCOUNTS_CATEGORIES,
 	BANKS_INFO,
 } from "../../../../constants/bankConstants";
+import { FacebookBanner } from "../../components/FacebookBanner/FacebookBanner";
 
 export const BankForm = ({ route, navigation }) => {
 	const { insideBank, isNewCurrency } = route.params;
@@ -35,12 +34,14 @@ export const BankForm = ({ route, navigation }) => {
 	const bank = useSelector(
 		(state) => state.money.currentRegister.banks[insideBank]
 	);
-	const bankNames = useSelector(
-		(state) => Object.keys(state.money.currentRegister.banks)
+	const bankNames = useSelector((state) =>
+		Object.keys(state.money.currentRegister.banks)
 	);
 
-	const currencyNames = useSelector(
-		(state) => isNewCurrency? Object.keys(state.money.currentRegister.banks[insideBank].accounts): []
+	const currencyNames = useSelector((state) =>
+		isNewCurrency
+			? Object.keys(state.money.currentRegister.banks[insideBank].accounts)
+			: []
 	);
 	const possibleBanks = useSelector((state) =>
 		BANKS_INFO.filter(
@@ -58,8 +59,8 @@ export const BankForm = ({ route, navigation }) => {
 	const [category, setCategory] = useState("");
 
 	const [incomplete, setIncomplete] = useState({
-		name: '',
-		currency: ''
+		name: "",
+		currency: "",
 	});
 	const possibleCurrencies = isNewCurrency
 		? CURRENCIES.filter(
@@ -78,24 +79,25 @@ export const BankForm = ({ route, navigation }) => {
 		Keyboard.dismiss();
 
 		let alreadyExist;
-		
-		if(isNewCurrency){
-			
-			alreadyExist = otherCurrency? currencyNames.some(name => !name.localeCompare(otherCurrency.toUpperCase())): false;
-		}else{
-			alreadyExist = otherName? bankNames.some(name => !name.localeCompare(otherName)): false;
+
+		if (isNewCurrency) {
+			alreadyExist = otherCurrency
+				? currencyNames.some(
+						(name) => !name.localeCompare(otherCurrency.toUpperCase())
+				  )
+				: false;
+		} else {
+			alreadyExist = otherName
+				? bankNames.some((name) => !name.localeCompare(otherName))
+				: false;
 		}
-		
+
 		const newName = name === "Otra" ? otherName : name;
 
-			const newCurrency =
-				currency == "Otra"
-					? otherCurrency.toUpperCase()
-					: currency.toUpperCase();
-		
-		if (newName && newCurrency  && !alreadyExist) {
-			
+		const newCurrency =
+			currency == "Otra" ? otherCurrency.toUpperCase() : currency.toUpperCase();
 
+		if (newName && newCurrency && !alreadyExist) {
 			dispatch(
 				addOperation(registerId, {
 					type: 1,
@@ -138,25 +140,23 @@ export const BankForm = ({ route, navigation }) => {
 			}
 		} else {
 			let newNameError = "";
-			if(!(name.length > 0)){
-				newNameError = "Campo requerido"
-			}else if(alreadyExist && !isNewCurrency){
-				newNameError = "Nombre en uso"
-			}else if(!(otherName.length > 0) && !isNewCurrency && name === "Otra"){
-				newNameError = "Campo requerido"
-			}
-			
-			let newCurrencyError = "";
-			if(!(currency.length > 0)){
-				newCurrencyError = "Campo requerido"
-			}else if(alreadyExist && isNewCurrency){
-				newCurrencyError = "Nombre en uso"
-			}else if(!(otherCurrency.length > 0) && currency == "Otra"){
-				newCurrencyError = "Campo requerido"
+			if (!(name.length > 0)) {
+				newNameError = "Campo requerido";
+			} else if (alreadyExist && !isNewCurrency) {
+				newNameError = "Nombre en uso";
+			} else if (!(otherName.length > 0) && !isNewCurrency && name === "Otra") {
+				newNameError = "Campo requerido";
 			}
 
-			
-			
+			let newCurrencyError = "";
+			if (!(currency.length > 0)) {
+				newCurrencyError = "Campo requerido";
+			} else if (alreadyExist && isNewCurrency) {
+				newCurrencyError = "Nombre en uso";
+			} else if (!(otherCurrency.length > 0) && currency == "Otra") {
+				newCurrencyError = "Campo requerido";
+			}
+
 			setIncomplete({
 				name: newNameError,
 				currency: newCurrencyError,
@@ -165,18 +165,10 @@ export const BankForm = ({ route, navigation }) => {
 	};
 
 	return (
-		<SafeAreaView
-			style={{  flex: 1 }}
-			forceInset="top"
-		>
-			<AdMobBanner
-				style={{height:60}}
-				bannerSize="fullBanner"
-				testDeviceId="EMULATOR"
-				adUnitID="ca-app-pub-3940256099942544/6300978111"   // 1027615916432065/3076638211
-				onDidFailToReceiveAdWithError={(e) => console.log(e)} />
+		<SafeAreaView style={{ flex: 1 }} forceInset="top">
+			<FacebookBanner />
 			<ScrollView
-				style={{ height: "100%", ...STYLES.screenContainer}}
+				style={{ height: "100%", ...STYLES.screenContainer }}
 				keyboardShouldPersistTaps="handled"
 			>
 				{isNewCurrency ? (
@@ -224,7 +216,7 @@ export const BankForm = ({ route, navigation }) => {
 					/>
 				)}
 
-				{incomplete.name.length > 0 &&  (
+				{incomplete.name.length > 0 && (
 					<Text style={STYLES.incompleteInput}>{incomplete.name}</Text>
 				)}
 
@@ -285,7 +277,7 @@ export const BankForm = ({ route, navigation }) => {
 						onChangeText={(newAmmount) => setAmmount(newAmmount)}
 					/>
 				</View>
-				
+
 				<Pressable
 					style={STYLES.pickerInput}
 					onPress={() => pickerCategory.current.focus()}
