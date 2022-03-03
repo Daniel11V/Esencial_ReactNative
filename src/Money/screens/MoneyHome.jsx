@@ -37,7 +37,7 @@ export const MoneyHome = ({ navigation }) => {
 
 	useEffect(() => {
 		if (user.id?.length) {
-			console.log("getPersonalRegisterFirstView");
+			console.log("GetPersonalRegisterFirstView");
 			dispatch(getPersonalRegisterFirstView(user));
 		}
 	}, [user]);
