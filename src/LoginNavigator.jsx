@@ -18,18 +18,18 @@ import { StatusBar } from "expo-status-bar";
 // import * as Google from "expo-google-app-auth";
 import * as GoogleSignIn from "expo-google-sign-in";
 import {
-	initializeAuth,
+	// initializeAuth,
 	signInWithEmailAndPassword,
 	createUserWithEmailAndPassword,
 	getAuth,
 } from "firebase/auth";
-import { getReactNativePersistence } from "firebase/auth/react-native";
+// import { getReactNativePersistence } from "firebase/auth/react-native";
 import { useDispatch, useSelector } from "react-redux";
 import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "../store/actions/user.action";
 import loginBackgroundImg from "../assets/login-background.png";
-import { firebaseApp } from "../database/firebase";
+// import { firebaseApp } from "../database/firebase";
 
 const FirebaseAuth = async (email, password) => {
 	try {
