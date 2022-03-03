@@ -18,42 +18,63 @@ import { StatusBar } from "expo-status-bar";
 // import * as Google from "expo-google-app-auth";
 import * as GoogleSignIn from "expo-google-sign-in";
 import {
-	getAuth,
+	initializeAuth,
 	signInWithEmailAndPassword,
 	createUserWithEmailAndPassword,
+	getAuth,
 } from "firebase/auth";
+import { getReactNativePersistence } from "firebase/auth/react-native";
 import { useDispatch, useSelector } from "react-redux";
 import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "../store/actions/user.action";
 import loginBackgroundImg from "../assets/login-background.png";
+import { firebaseApp } from "../database/firebase";
 
-const signInOnFirebase = async (email, password) => {
-	const auth = getAuth();
-	signInWithEmailAndPassword(auth, email, password)
-		.then((userCredential) => {
-			const user = userCredential.user;
-			console.log("Successful Firebase Login");
-		})
-		.catch((error) => {
-			console.log("Error in Sign In on Firebase");
-			console.log(error.code, error.message);
+const FirebaseAuth = async (email, password) => {
+	try {
+		const auth = getAuth();
+		// const auth = initializeAuth(firebaseApp, {
+		// 	persistence: getReactNativePersistence(AsyncStorage),
+		// });
 
-			createFirebaseUser(auth, email, password);
-		});
+		const res = await FirebaseLogin(auth, email, password);
+
+		if (res.type === "error") {
+			await FirebaseSignIn(auth, email, password);
+
+			const res2 = await FirebaseLogin(auth, email, password);
+			if (res2.type === "error")
+				throw new Error(`Second Login Fail - ${res2.error}`);
+		}
+	} catch (error) {
+		console.log("FirebaseAuth: fail");
+		throw new Error(error);
+	}
 };
 
-const createFirebaseUser = async (auth, email, password) => {
-	createUserWithEmailAndPassword(auth, email, password)
-		.then((userCredential) => {
-			const user = userCredential.user;
-			console.log("Successful Firebase User Creation");
-			signInOnFirebase(email, password);
-		})
-		.catch((error) => {
-			console.warn("Error in Create User on Firebase");
-			console.warn(error.code, error.message);
-		});
+const FirebaseLogin = async (auth, email, password) => {
+	try {
+		const response = await signInWithEmailAndPassword(auth, email, password);
+		// const user = userCredential.user;
+		//console.log("FirebaseLogin: successful");
+		return { type: "success", data: response };
+	} catch (error) {
+		//console.log("FirebaseLogin: fail");
+		//console.log(error.code, error.message);
+		return { type: "error", error };
+	}
+};
+
+const FirebaseSignIn = async (auth, email, password) => {
+	try {
+		await createUserWithEmailAndPassword(auth, email, password);
+		//console.log("FirebaseSignIn: successful");
+	} catch (error) {
+		//console.warn("FirebaseSignIn: fail");
+		//console.warn(error.code, error.message);
+		throw new Error(error);
+	}
 };
 
 const LoginScreen = () => {
@@ -123,24 +144,31 @@ const LoginScreen = () => {
 		}
 	};
 
-	const handleGoogleSigninBtn = async () => {
+	const manualLogin = async () => {
 		setGoogleLoading(true);
 
 		try {
 			await GoogleSignIn.askForPlayServicesAsync();
 			const { type, user } = await GoogleSignIn.signInAsync();
+			const { email, uid } = user;
+			console.log("user: ", user);
 			if (type === "success") {
+				console.log("GoogleAuth: successful");
+
+				await FirebaseAuth(email, uid);
+				console.log("FirebaseAuth: successful");
+
 				handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
+				await syncUserWithStateAsync();
 
-				await signInOnFirebase(user.email, user.uid);
-
-				syncUserWithStateAsync();
+				console.log("ManualLogin: successful");
 			} else {
 				handleMessage("Inicio de sesion cancelado.");
+				console.log("GoogleAuth: fail");
 			}
 			setGoogleLoading(false);
 		} catch (error) {
-			console.log(error);
+			console.log("ManualLogin: error - ", error);
 			handleMessage(
 				"Ocurrio un error. Comprueba tu conexión a internet e intenta de nuevo."
 			);
@@ -207,10 +235,7 @@ const LoginScreen = () => {
 				>
 					{message}
 				</Text>
-				<Pressable
-					onPress={() => handleGoogleSigninBtn()}
-					style={styles.logBtn}
-				>
+				<Pressable onPress={() => manualLogin()} style={styles.logBtn}>
 					{googleLoading ? (
 						<ActivityIndicator
 							size="large"
@@ -276,29 +301,31 @@ export const LoginNavigator = () => {
 
 	const [appReady, setAppReady] = useState(false);
 
-	const checkLoginCredentials = async () => {
+	const autoLogin = async () => {
 		try {
 			const result = await AsyncStorage.getItem("esencialCredentials");
-
-			if (result !== null) {
-				const { email, id } = JSON.parse(result);
-				await signInOnFirebase(email, id);
-				dispatch(login(JSON.parse(result)));
-				console.log("Successful AsyncStorage data recover");
-			} else {
-				dispatch(login({ id: "" }));
-				console.log("No AsyncStorage data");
+			if (result === null) {
+				console.log("AsyncStorage: no data");
+				throw new Error();
 			}
+			console.log("AsyncStorage: success");
+
+			const { email, id } = JSON.parse(result);
+			await FirebaseAuth(email, id);
+			console.log("FirebaseAuth: success");
+
+			dispatch(login(JSON.parse(result)));
+			console.log("AutoLogin: success");
 		} catch (error) {
 			dispatch(login({ id: "" }));
-			console.warn(error);
+			console.log("AutoLogin: fail");
 		}
 	};
 
 	if (!appReady || !user.id.localeCompare("0")) {
 		return (
 			<AppLoading
-				startAsync={checkLoginCredentials}
+				startAsync={autoLogin}
 				onFinish={() => setAppReady(true)}
 				onError={console.warn}
 			/>

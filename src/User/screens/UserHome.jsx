@@ -9,6 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as GoogleSignIn from "expo-google-sign-in";
 import { getAuth, signOut } from "firebase/auth";
 import * as Updates from "expo-updates";
+import { deleteMoneyLocalData } from "../../../store/actions/money.action";
 
 export const UserHome = () => {
 	const user = useSelector((state) => state.user);
@@ -34,16 +35,17 @@ export const UserHome = () => {
 	const handleLogout = () => {
 		const auth = getAuth();
 		signOut(auth)
-			.then(() => console.log("Successful Firebase Sign Out"))
-			.catch((error) => console.log("Error Firebase Sign Out: ", error));
+			.then(() => console.log("Firebase Sign Out: success"))
+			.catch((error) => console.log("Firebase Sign Out: error - ", error));
 
 		AsyncStorage.removeItem("esencialCredentials")
 			.then(() => {
 				dispatch(logout());
+				dispatch(deleteMoneyLocalData());
 				GoogleSignIn.signOutAsync();
 			})
 			.catch((error) =>
-				console.log("Error AsyncStorage/Google Sign Out: ", error)
+				console.log("AsyncStorage/Google Sign Out: error - ", error)
 			);
 	};
 

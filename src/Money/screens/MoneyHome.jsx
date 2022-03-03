@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-	AdMobBanner
-  } from 'expo-ads-admob';
+import { AdMobBanner } from "expo-ads-admob";
 import {
 	Pressable,
 	Text,
@@ -39,6 +37,7 @@ export const MoneyHome = ({ navigation }) => {
 
 	useEffect(() => {
 		if (user.id?.length) {
+			console.log("getPersonalRegisterFirstView");
 			dispatch(getPersonalRegisterFirstView(user));
 		}
 	}, [user]);
