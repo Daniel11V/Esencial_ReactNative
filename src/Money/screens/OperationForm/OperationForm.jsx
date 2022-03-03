@@ -8,9 +8,6 @@ import {
 	TextInput,
 	View,
 } from "react-native";
-import {
-	AdMobBanner
-  } from 'expo-ads-admob';
 import React, { useEffect, useRef, useState } from "react";
 import {
 	addOperation,
@@ -637,41 +634,50 @@ const PayForm = ({ navigation }) => {
 	if (loading) {
 		return <View></View>;
 	}
-	
+
 	const checkValue = (value) => {
-		if(ammount){
-			if(value.length > ammount.length && ammount[ammount.length-3] == "."){
+		if (ammount) {
+			if (value.length > ammount.length && ammount[ammount.length - 3] == ".") {
 				return ammount;
 			}
 		}
-		
-		if(value[value.length-1] == "." && value.length > ammount.length && !pointON){
-			setAmmount(value)
-			setPointON(true);	
+
+		if (
+			value[value.length - 1] == "." &&
+			value.length > ammount.length &&
+			!pointON
+		) {
+			setAmmount(value);
+			setPointON(true);
 			return ammount;
 		}
-		if(ammount){
-			if(ammount[ammount.length-1] == "." && value.length < ammount.length){
-				setAmmount(value)
-				setPointON(false);		
+		if (ammount) {
+			if (ammount[ammount.length - 1] == "." && value.length < ammount.length) {
+				setAmmount(value);
+				setPointON(false);
 				return ammount;
 			}
 		}
-		if(value[value.length-1] == "." && value.length < ammount.length){
-			setAmmount(value)
+		if (value[value.length - 1] == "." && value.length < ammount.length) {
+			setAmmount(value);
 		}
-		
-		if(value){
-			if(value[value.length-1] !== "." && value[value.length-1] !== "-" && value[value.length-1] !== " " && value[value.length-1] !== ","){
-				setAmmount(value)	
+
+		if (value) {
+			if (
+				value[value.length - 1] !== "." &&
+				value[value.length - 1] !== "-" &&
+				value[value.length - 1] !== " " &&
+				value[value.length - 1] !== ","
+			) {
+				setAmmount(value);
 			}
-		}else{
-			setAmmount(value)
+		} else {
+			setAmmount(value);
 		}
-		
+
 		return ammount;
-	}
-	
+	};
+
 	return !enoughAccounts ? (
 		<View
 			style={{
@@ -739,7 +745,7 @@ const PayForm = ({ navigation }) => {
 						selectionColor={COLORS.primary}
 						value={ammount}
 						keyboardType="numeric"
-					    onChangeText={(newAmmount) => checkValue(newAmmount)}
+						onChangeText={(newAmmount) => checkValue(newAmmount)}
 					/>
 				</View>
 				<Pressable

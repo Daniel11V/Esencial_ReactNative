@@ -17,11 +17,44 @@ import { StatusBar } from "expo-status-bar";
 
 // import * as Google from "expo-google-app-auth";
 import * as GoogleSignIn from "expo-google-sign-in";
+import {
+	getAuth,
+	signInWithEmailAndPassword,
+	createUserWithEmailAndPassword,
+} from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
 import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "../store/actions/user.action";
 import loginBackgroundImg from "../assets/login-background.png";
+
+const signInOnFirebase = async (email, password) => {
+	const auth = getAuth();
+	signInWithEmailAndPassword(auth, email, password)
+		.then((userCredential) => {
+			const user = userCredential.user;
+			console.log("Successful Firebase Login");
+		})
+		.catch((error) => {
+			console.log("Error in Sign In on Firebase");
+			console.log(error.code, error.message);
+
+			createFirebaseUser(auth, email, password);
+		});
+};
+
+const createFirebaseUser = async (auth, email, password) => {
+	createUserWithEmailAndPassword(auth, email, password)
+		.then((userCredential) => {
+			const user = userCredential.user;
+			console.log("Successful Firebase User Creation");
+			signInOnFirebase(email, password);
+		})
+		.catch((error) => {
+			console.warn("Error in Create User on Firebase");
+			console.warn(error.code, error.message);
+		});
+};
 
 const LoginScreen = () => {
 	const dispatch = useDispatch();
@@ -46,7 +79,7 @@ const LoginScreen = () => {
 			scopes: ["profile", "email"],
 		};
 
-		// BEFORE width expo-google-app-auth
+		// BEFORE with expo-google-app-auth
 
 		// const config = {
 		// 	androidClientId:
@@ -98,6 +131,9 @@ const LoginScreen = () => {
 			const { type, user } = await GoogleSignIn.signInAsync();
 			if (type === "success") {
 				handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
+
+				await signInOnFirebase(user.email, user.uid);
+
 				syncUserWithStateAsync();
 			} else {
 				handleMessage("Inicio de sesion cancelado.");
@@ -110,30 +146,6 @@ const LoginScreen = () => {
 			);
 			setGoogleLoading(false);
 		}
-
-		// Google.logInAsync(config)
-		// 	.then((result) => {
-		// 		const { type, user, accessToken } = result;
-		// 		if (type == "success") {
-		// 			const { id, email, name, photoUrl } = user;
-		// 			handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
-		// 			persistLogin(
-		// 				{ id, email, name, photoUrl, accessToken },
-		// 				message,
-		// 				"SUCCESS"
-		// 			);
-		// 		} else {
-		// 			handleMessage("Inicio de sesion cancelado.");
-		// 		}
-		// 		setGoogleLoading(false);
-		// 	})
-		// 	.catch((error) => {
-		// 		console.log(error);
-		// 		handleMessage(
-		// 			"Ocurrio un error. Comprueba tu conexión a internet e intenta de nuevo."
-		// 		);
-		// 		setGoogleLoading(false);
-		// 	});
 	};
 
 	const persistLogin = (credentials, message, status) => {
@@ -264,21 +276,23 @@ export const LoginNavigator = () => {
 
 	const [appReady, setAppReady] = useState(false);
 
-	const checkLoginCredentials = () => {
-		AsyncStorage.getItem("esencialCredentials")
-			.then((result) => {
-				if (result !== null) {
-					// setAsyncData(JSON.parse(result));
-					dispatch(login(JSON.parse(result)));
-				} else {
-					dispatch(login({ id: "" }));
-				}
-				console.log("Async Finish");
-			})
-			.catch((error) => {
+	const checkLoginCredentials = async () => {
+		try {
+			const result = await AsyncStorage.getItem("esencialCredentials");
+
+			if (result !== null) {
+				const { email, id } = JSON.parse(result);
+				await signInOnFirebase(email, id);
+				dispatch(login(JSON.parse(result)));
+				console.log("Successful AsyncStorage data recover");
+			} else {
 				dispatch(login({ id: "" }));
-				console.log(error);
-			});
+				console.log("No AsyncStorage data");
+			}
+		} catch (error) {
+			dispatch(login({ id: "" }));
+			console.warn(error);
+		}
 	};
 
 	if (!appReady || !user.id.localeCompare("0")) {
