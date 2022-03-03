@@ -7,6 +7,7 @@ import { STYLES } from "../../../constants/styles";
 import { logout } from "../../../store/actions/user.action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as GoogleSignIn from "expo-google-sign-in";
+import { getAuth, signOut } from "firebase/auth";
 import * as Updates from "expo-updates";
 
 export const UserHome = () => {
@@ -31,12 +32,19 @@ export const UserHome = () => {
 	}, []);
 
 	const handleLogout = () => {
+		const auth = getAuth();
+		signOut(auth)
+			.then(() => console.log("Successful Firebase Sign Out"))
+			.catch((error) => console.log("Error Firebase Sign Out: ", error));
+
 		AsyncStorage.removeItem("esencialCredentials")
 			.then(() => {
 				dispatch(logout());
 				GoogleSignIn.signOutAsync();
 			})
-			.catch((error) => console.log(error));
+			.catch((error) =>
+				console.log("Error AsyncStorage/Google Sign Out: ", error)
+			);
 	};
 
 	return (
