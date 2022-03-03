@@ -1,11 +1,10 @@
-import { Alert, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
-import {
-	AdMobBanner
-  } from 'expo-ads-admob';
+import { Alert, Pressable, SafeAreaView, Text, View } from "react-native";
+
 import { BankList } from "../../components/BankList/BankList";
 import React from "react";
 import { useSelector } from "react-redux";
 import { STYLES } from "../../../../constants/styles";
+import { FacebookBanner } from "../../components/FacebookBanner/FacebookBanner";
 
 export const Banks = ({ navigation }) => {
 	const banks = useSelector((state) => state.money.currentRegister.banks);
@@ -47,17 +46,9 @@ export const Banks = ({ navigation }) => {
 	};
 
 	return (
-		<SafeAreaView
-			style={{ flex: 1 }}
-			forceInset="top"
-		>
-			<AdMobBanner
-				style={{height:60}}
-				bannerSize="fullBanner"
-				testDeviceId="EMULATOR"
-				adUnitID="ca-app-pub-3940256099942544/6300978111"   // 1027615916432065/3076638211
-				onDidFailToReceiveAdWithError={(e) => console.log(e)} />
-			<View style={{ ...STYLES.screenContainer}}>
+		<SafeAreaView style={{ flex: 1 }} forceInset="top">
+			<FacebookBanner />
+			<View style={{ ...STYLES.screenContainer }}>
 				<View style={STYLES.boxesContainer}>
 					<Pressable onPress={openBalance} style={STYLES.btnSecondaryMiddle}>
 						<Text style={STYLES.btnSecondaryText}>Saldo Total</Text>

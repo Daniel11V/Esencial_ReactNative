@@ -12,6 +12,7 @@ export const SET_MONEY_REGISTER = 'SET_MONEY_REGISTER'
 export const CREATE_MONEY_REGISTER = 'CREATE_MONEY_REGISTER'
 export const ADD_MONEY_REGISTER = 'ADD_MONEY_REGISTER'
 export const LEAVE_MONEY_REGISTER = 'LEAVE_MONEY_REGISTER'
+export const DELETE_MONEY_LOCAL_DATA = 'DELETE_MONEY_LOCAL_DATA'
 
 export const SET_MONEY_NOTIFICATIONS = 'SET_MONEY_NOTIFICATIONS'
 export const DELETE_MONEY_NOTIFICATION = 'DELETE_MONEY_NOTIFICATION'
@@ -32,6 +33,11 @@ export const DELETE_OPERATION = 'DELETE_OPERATION'
 export const endLoading = () => ({
     type: END_LOADING,
     payload: { loadingState: false }
+})
+
+export const deleteMoneyLocalData = () => ({
+    type: DELETE_MONEY_LOCAL_DATA,
+    payload: {}
 })
 
 export const setBanks = (banksUpdated) => ({

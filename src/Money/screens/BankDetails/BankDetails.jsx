@@ -8,9 +8,7 @@ import {
 	Text,
 	View,
 } from "react-native";
-import {
-	AdMobBanner
-  } from 'expo-ads-admob';
+
 import React, { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Picker } from "@react-native-picker/picker";
@@ -32,6 +30,7 @@ import {
 	updateAccount,
 } from "../../../../store/actions/money.action";
 import { OperationList } from "../../components/OperationList/OperationList";
+import { FacebookBanner } from "../../components/FacebookBanner/FacebookBanner";
 
 export const BankDetails = ({ route, navigation }) => {
 	const { bankName, hasNewCurrency } = route.params;
@@ -113,132 +112,130 @@ export const BankDetails = ({ route, navigation }) => {
 	};
 
 	return (
-		<SafeAreaView style={{flex: 1 }}>
-		<AdMobBanner
-				style={{height:60}}
-				bannerSize="fullBanner"
-				testDeviceId="EMULATOR"
-				adUnitID="ca-app-pub-3940256099942544/6300978111"   // 1027615916432065/3076638211
-				onDidFailToReceiveAdWithError={(e) => console.log(e)} />
-		<ScrollView style={{ ...STYLES.screenContainer, flex: 1 }}>
-			<View style={{ ...STYLES.row, justifyContent: "flex-start" }}>
-				<Image
-					style={STYLES.titleBankImg}
-					source={
-						bankIndex === -1
-							? accountLogoDefault
-							: {
-									uri: BANKS_INFO[bankIndex].imgUrl,
-							  }
+		<SafeAreaView style={{ flex: 1 }}>
+			<FacebookBanner />
+			<ScrollView style={{ ...STYLES.screenContainer, flex: 1 }}>
+				<View style={{ ...STYLES.row, justifyContent: "flex-start" }}>
+					<Image
+						style={STYLES.titleBankImg}
+						source={
+							bankIndex === -1
+								? accountLogoDefault
+								: {
+										uri: BANKS_INFO[bankIndex].imgUrl,
+								  }
+						}
+					/>
+					<Text style={STYLES.bigTitle}>{bank.name}</Text>
+				</View>
+				<Pressable
+					style={{
+						alignSelf: "flex-end",
+						marginVertical: 10,
+					}}
+					onPress={() =>
+						navigation.push("BankForm", {
+							insideBank: bankName,
+							isNewCurrency: true,
+						})
 					}
-				/>
-				<Text style={STYLES.bigTitle}>{bank.name}</Text>
-			</View>
-			<Pressable
-				style={{
-					alignSelf: "flex-end",
-					marginVertical: 10,
-				}}
-				onPress={() =>
-					navigation.push("BankForm", {
-						insideBank: bankName,
-						isNewCurrency: true,
-					})
-				}
-			>
-				<Text style={STYLES.btnThirdText}>Añadir moneda</Text>
-			</Pressable>
-			<View style={STYLES.boxesContainer}>
-				{orderByDate(Object.values(bank.accounts)).map((account, key) => (
-					<Pressable
-						key={key}
-						onPress={() => changeSelectedAccount(account.currency)}
-						style={{
-							...(bank.accounts[selectedAccount]?.currency == account.currency
-								? STYLES.btnSecondaryMiddle
-								: STYLES.roundedItemMiddle),
-							paddingHorizontal: 12,
-							paddingVertical: 12,
-							justifyContent: "space-between",
-						}}
-					>
-						<Text
+				>
+					<Text style={STYLES.btnThirdText}>Añadir moneda</Text>
+				</Pressable>
+				<View style={STYLES.boxesContainer}>
+					{orderByDate(Object.values(bank.accounts)).map((account, key) => (
+						<Pressable
+							key={key}
+							onPress={() => changeSelectedAccount(account.currency)}
 							style={{
-								...STYLES.bigText,
-								fontWeight: "bold",
-								...(bank.accounts[selectedAccount]?.currency ==
-									account.currency && { color: COLORS.primary }),
+								...(bank.accounts[selectedAccount]?.currency == account.currency
+									? STYLES.btnSecondaryMiddle
+									: STYLES.roundedItemMiddle),
+								paddingHorizontal: 12,
+								paddingVertical: 12,
+								justifyContent: "space-between",
 							}}
 						>
-							{account.ammount} {account.currency}
-						</Text>
-						{bank.accounts[selectedAccount]?.currency == account.currency && (
-							<Pressable onPress={handleDelete}>
-								<Ionicons
-									name="close-circle"
-									size={25}
-									color={COLORS.lightGray}
-								/>
-							</Pressable>
-						)}
-					</Pressable>
-				))}
-			</View>
-			<Text style={STYLES.subtitle}>Detalles</Text>
-			<Animated.View style={{ opacity: opacDetails }}>
-				<View style={STYLES.row}>
-					<Text style={STYLES.normalText}>
-						Cuenta de {bank.accounts[selectedAccount]?.category}
-					</Text>
-					<View>
-						<Pressable onPress={() => pickerCategory.current.focus()}>
-							<Text style={STYLES.btnThirdText}>Cambiar</Text>
+							<Text
+								style={{
+									...STYLES.bigText,
+									fontWeight: "bold",
+									...(bank.accounts[selectedAccount]?.currency ==
+										account.currency && { color: COLORS.primary }),
+								}}
+							>
+								{account.ammount} {account.currency}
+							</Text>
+							{bank.accounts[selectedAccount]?.currency == account.currency && (
+								<Pressable onPress={handleDelete}>
+									<Ionicons
+										name="close-circle"
+										size={25}
+										color={COLORS.lightGray}
+									/>
+								</Pressable>
+							)}
 						</Pressable>
-						<Picker
-							selectedValue={bank.accounts[selectedAccount]?.category}
-							onValueChange={(newValue) =>
-								dispatch(
-									updateAccount(
-										registerId,
-										bank.name,
-										bank.accounts[selectedAccount]?.currency,
-										"category",
-										newValue
-									)
-								)
-							}
-							ref={pickerCategory}
-							style={STYLES.invisible}
-							prompt="Tipo de cuenta"
-						>
-							{ACCOUNTS_CATEGORIES.map((categoryName, key) => (
-								<Picker.Item
-									key={key}
-									label={`   Cuenta de ${categoryName}`}
-									value={categoryName}
-									style={{
-										...STYLES.bigText,
-										backgroundColor:
-											categoryName === bank.accounts[selectedAccount]?.category
-												? COLORS.tinyGray
-												: "#fff",
-									}}
-								/>
-							))}
-						</Picker>
-					</View>
+					))}
 				</View>
-				{/* Operaciones */}
-				<Text style={{ ...STYLES.subtitle, marginBottom: 0 }}>Operaciones</Text>
-				<OperationList
-					handleClickOperation={(operationId) =>
-						navigation.push("OperationDetails", { operationId })
-					}
-					filter={{ bank: bankName, account: selectedAccount }}
-					verticalSpace={true}
-				/>
-			</Animated.View>
-		</ScrollView>
+				<Text style={STYLES.subtitle}>Detalles</Text>
+				<Animated.View style={{ opacity: opacDetails }}>
+					<View style={STYLES.row}>
+						<Text style={STYLES.normalText}>
+							Cuenta de {bank.accounts[selectedAccount]?.category}
+						</Text>
+						<View>
+							<Pressable onPress={() => pickerCategory.current.focus()}>
+								<Text style={STYLES.btnThirdText}>Cambiar</Text>
+							</Pressable>
+							<Picker
+								selectedValue={bank.accounts[selectedAccount]?.category}
+								onValueChange={(newValue) =>
+									dispatch(
+										updateAccount(
+											registerId,
+											bank.name,
+											bank.accounts[selectedAccount]?.currency,
+											"category",
+											newValue
+										)
+									)
+								}
+								ref={pickerCategory}
+								style={STYLES.invisible}
+								prompt="Tipo de cuenta"
+							>
+								{ACCOUNTS_CATEGORIES.map((categoryName, key) => (
+									<Picker.Item
+										key={key}
+										label={`   Cuenta de ${categoryName}`}
+										value={categoryName}
+										style={{
+											...STYLES.bigText,
+											backgroundColor:
+												categoryName ===
+												bank.accounts[selectedAccount]?.category
+													? COLORS.tinyGray
+													: "#fff",
+										}}
+									/>
+								))}
+							</Picker>
+						</View>
+					</View>
+					{/* Operaciones */}
+					<Text style={{ ...STYLES.subtitle, marginBottom: 0 }}>
+						Operaciones
+					</Text>
+					<OperationList
+						handleClickOperation={(operationId) =>
+							navigation.push("OperationDetails", { operationId })
+						}
+						filter={{ bank: bankName, account: selectedAccount }}
+						verticalSpace={true}
+					/>
+				</Animated.View>
+			</ScrollView>
 		</SafeAreaView>
 	);
 };

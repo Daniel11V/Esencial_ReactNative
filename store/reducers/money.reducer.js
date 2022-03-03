@@ -3,7 +3,7 @@ import {
     SET_MONEY_REGISTERS_ID, SET_MONEY_REGISTER, SET_MONEY_PERS_REGISTER_ID, CREATE_MONEY_REGISTER, ADD_MONEY_REGISTER, LEAVE_MONEY_REGISTER,
     ADD_BANK, SET_BANKS, DELETE_BANK,
     ADD_ACCOUNT, DELETE_ACCOUNT, UPDATE_ACCOUNT,
-    ADD_OPERATION, DELETE_OPERATION, SET_OPERATIONS, UPDATE_OPERATION, SET_MONEY_NOTIFICATIONS, DELETE_MONEY_NOTIFICATION,
+    ADD_OPERATION, DELETE_OPERATION, SET_OPERATIONS, UPDATE_OPERATION, SET_MONEY_NOTIFICATIONS, DELETE_MONEY_NOTIFICATION, DELETE_MONEY_LOCAL_DATA,
 } from "../actions/money.action"
 
 const initialState = {
@@ -80,6 +80,10 @@ const MoneyReducer = (state = initialState, { type, payload }) => {
             return {
                 ...state,
                 availableRegisters: payload.newAvailableRegisters ? payload.newAvailableRegisters : {},
+            }
+        case DELETE_MONEY_LOCAL_DATA:
+            return {
+                ...initialState
             }
         case SET_MONEY_NOTIFICATIONS:
             return {

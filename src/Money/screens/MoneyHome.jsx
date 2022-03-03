@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-	AdMobBanner
-  } from 'expo-ads-admob';
-import {
 	Pressable,
 	Text,
 	ScrollView,
@@ -26,6 +23,8 @@ import {
 import { OperationList } from "../components/OperationList/OperationList";
 import { MoneyRegister } from "../components/MoneyRegister/MoneyRegister";
 import { COLORS } from "../../../constants/colors";
+import { FacebookBanner } from "../components/FacebookBanner/FacebookBanner";
+import { AdSettings } from "expo-ads-facebook";
 
 export const MoneyHome = ({ navigation }) => {
 	const dispatch = useDispatch();
@@ -36,10 +35,18 @@ export const MoneyHome = ({ navigation }) => {
 		(state) => state.money.availableRegisters
 	);
 	const [runingNotifications, setRuningNotifications] = useState(false);
+	const [hasPermission, setHasPermission] = useState(false);
 
 	useEffect(() => {
 		if (user.id?.length) {
+			console.log("GetPersonalRegisterFirstView");
 			dispatch(getPersonalRegisterFirstView(user));
+
+			AdSettings.requestPermissionsAsync().then((permissions) => {
+				let canTrack = permissions.status === "granted";
+				AdSettings.setAdvertiserTrackingEnabled(canTrack);
+				setHasPermission(true);
+			});
 		}
 	}, [user]);
 
@@ -119,13 +126,7 @@ export const MoneyHome = ({ navigation }) => {
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
-			<AdMobBanner
-				style={{ height: 60 }}
-				bannerSize="fullBanner"
-				testDeviceId="EMULATOR"
-				adUnitID="ca-app-pub-3940256099942544/6300978111" // 1027615916432065/3076638211
-				onDidFailToReceiveAdWithError={(e) => console.log(e)}
-			/>
+			<FacebookBanner isLoaded={hasPermission} />
 			<ScrollView
 				style={STYLES.screenContainer}
 				refreshControl={
