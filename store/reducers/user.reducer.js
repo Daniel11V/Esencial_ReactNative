@@ -4,6 +4,7 @@ const initialState = {
     id: '0',    // Loading
     name: '',
     email: '',
+    password: '',
     photoUrl: '',
     accessToken: '',
 }
