@@ -46,7 +46,11 @@ const FirebaseAuth = async (email, password) => {
 			const res2 = await FirebaseLogin(auth, email, password);
 			if (res2.type === "error")
 				throw new Error(`Second Login Fail - ${res2.error}`);
+
+			return res2.data.user.uid;
 		}
+
+		return res.data.user.uid;
 	} catch (error) {
 		console.log("FirebaseAuth: fail");
 		throw new Error(error);
@@ -138,18 +142,19 @@ const LoginScreen = () => {
 
 				const { uid, email, displayName, photoURL, auth } = user;
 
-				await FirebaseAuth(email, uid);
+				const firebaseUid = await FirebaseAuth(email, uid);
 				console.log("FirebaseAuth: successful");
 
 				handleMessage("Inicio de sesion exitoso. Cargando...", "SUCCESS");
 
 				persistLogin(
 					{
-						id: uid,
+						id: firebaseUid,
 						accessToken: auth.accessToken,
 						email,
 						name: displayName,
 						photoUrl: photoURL,
+						password: uid,
 					},
 					message,
 					"SUCCESS"
@@ -304,11 +309,11 @@ export const LoginNavigator = () => {
 			}
 			console.log("AsyncStorage: success");
 
-			const { email, id } = JSON.parse(result);
-			await FirebaseAuth(email, id);
+			const { email, password } = JSON.parse(result);
+			const firebaseUid = await FirebaseAuth(email, password);
 			console.log("FirebaseAuth: success");
 
-			dispatch(login(JSON.parse(result)));
+			dispatch(login({ ...JSON.parse(result), id: firebaseUid }));
 			console.log("AutoLogin: success");
 		} catch (error) {
 			dispatch(login({ id: "" }));
