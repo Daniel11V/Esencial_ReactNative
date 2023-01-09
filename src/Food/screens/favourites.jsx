@@ -11,35 +11,24 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FoodNavigation } from "../components/FoodNavigation";
 
-export const FoodHome = ({ navigation }) => {
-	const labels = FOOD_LABELS;
-	return (
+export const Favourites = ({ navigation }) => {
+	const {favorites} = useSelector((state) => state.food);
+    return (<View forceInset="top">
 		<SafeAreaView style={{ flex: 1 }}>
 			<View style={STYLES.boxesContainer}>
-				{labels.map((label, index) => (
+				{favorites.map((recipe, key) => (
 					<Pressable
-						key={index}
-						onPress={() => navigation.push("FoodSelection", {label:label.name})}
-						style={{
-							paddingHorizontal: 12,
-							paddingVertical: 12,
-							justifyContent: "space-between",
-						}}
+					key={key}
+					onPress={() => navigation.push("Recipe", {recipe})}
 					>
-						<Text
-							style={{
-								...STYLES.bigText,
-								fontWeight: "bold",
-							}}
-						>
-							{label.name} 
-						</Text>
-						
-						
+						<text>
+							{recipe.name}
+						</text>
 					</Pressable>
 				))}
+        		<FoodNavigation navigation={navigation} />
 			</View>
-			<FoodNavigation navigation={navigation} />
 		</SafeAreaView>
-	);
-};
+    </View>);
+}
+
