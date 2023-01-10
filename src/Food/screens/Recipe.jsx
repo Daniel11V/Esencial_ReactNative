@@ -13,10 +13,16 @@ import { setFavorite, setFavoriteDB } from "../../../store/actions/food.action";
 
 export const Recipe = ({ route, navigation }) => {
 	const { recipeId } = route.params;
-	const {recipeList, favorites} = useSelector((state) => state.food);
+	const {ingredientList, recipeList, favorites} = useSelector((state) => state.food);
     const recipe = recipeList.find(recipe => recipe.id === recipeId)
     const dispatch = useDispatch();
     const [recipeText, setRecipeText] = useState("ingredients")
+
+    const ingredientsList = [];
+
+	for(let i = 0; i < recipe.ingredients.length; i++){
+		ingredientsList.push(ingredientList.filter(ids => ids.id.includes(recipe.ingredients[i].id)).pop())
+	}
 
 	const isFavorite = (recipeId) => favorites.includes(recipeId);
     
@@ -56,7 +62,7 @@ export const Recipe = ({ route, navigation }) => {
                     
                 
                 {/* agregar la receta al calendario  */}
-                <Pressable
+                {/* <Pressable
                     OnPress={() => navigation.push("Calendar")}
                 >
                     <Ionicons
@@ -64,7 +70,7 @@ export const Recipe = ({ route, navigation }) => {
                     size={25}
                     color={COLORS.lightGray}
                     />
-                </Pressable>
+                </Pressable> */}
                 <Text
                     style={{
                         ...STYLES.normalText,
@@ -105,9 +111,9 @@ export const Recipe = ({ route, navigation }) => {
                         ))}
                     </View>) :
                     (<View>
-                        {recipe.ingredients.map((ingredient, key) => (
-                            <Text key={key}>
-                                {ingredient.id}{ingredient.quantity}
+                        {ingredientsList.map((ingredient, key) => (
+                            <Text key={key} style={{marginRight: 30}}>
+                                {ingredient.name}{recipe.ingredients[key].quantity}{ingredient.medUnities}
                             </Text>
                         ))}
                     </View>)

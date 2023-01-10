@@ -19,12 +19,12 @@ export const FoodNavigator = () => {
 			<Stack.Screen
 				name="Favorite"
 				component={Favourites}
-				options={{ title: "Calendario de comidas" }}
+				options={{ title: "Mi cocina" }}
 			/>
 			<Stack.Screen
 				name="calendarNavigator"
 				component={Calendar}
-				options={{ title: "Mi cocina" }}
+				options={{ title: "Calendario de comidas" }}
 			/>
 			<Stack.Screen
 				name="FoodSelection"

@@ -14,11 +14,11 @@ const initialState = {
             steps:["colocar aceite en la bandeja donde ira la milanesa","encender el horono a temperatura media","colocar la milanesa dentro de la bandeja e introducirla en el horno durante 8 minutos","dar vuelta la milanesa y volver a introducirla en el horno durante 3:30 minutos mas", "poner la leche en una caserola y dejar al fuego hasta que hierva", "una vez que la leche este hirviendo apagar el fuego y poner el pure cheff", "agregar sal, nues moscada y manteca o queso y revolver hasta que no se distingas los ingredientes"],
             ingredients:[
                 {
-                    id:"milanesa",
+                    id:"8",
                     quantity:"1"
                 },
                 {
-                    id:"pure cheff",
+                    id:"9",
                     quantity:"500"
                 }
             ]
@@ -32,12 +32,12 @@ const initialState = {
             steps:["hacer la salchicha", "hacer el pure", "unirlo", "tachan"],
             ingredients:[
                 {
-                    id:"salchicha",
+                    id:"10",
                     quantity:"6"
                 },
                 {
-                    id:"pure",
-                    quantity:"1"
+                    id:"9",
+                    quantity:"500"
                 }
             ]
         },
@@ -121,6 +121,27 @@ const initialState = {
             img:"",
             description:"frances",
             medUnities:"gramos"
+        },
+        {
+            id:"8",
+            name: "milanesa",
+            img:"",
+            description:"rica",
+            medUnities:"unidades"
+        },
+        {
+            id:"9",
+            name: "pure cheff",
+            img:"",
+            description:"seco",
+            medUnities:"gramos"
+        },
+        {
+            id:"10",
+            name: "salchicha",
+            img:"",
+            description:"larga",
+            medUnities:"unidades"
         }
     ]
 }

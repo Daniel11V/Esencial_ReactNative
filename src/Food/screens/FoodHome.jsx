@@ -26,6 +26,7 @@ export const FoodHome = ({ navigation }) => {
 							justifyContent: "space-between",
 						}}
 					>
+						
 						<Text
 							style={{
 								...STYLES.bigText,
@@ -34,8 +35,6 @@ export const FoodHome = ({ navigation }) => {
 						>
 							{label.name} 
 						</Text>
-						
-						
 					</Pressable>
 				))}
 			</View>

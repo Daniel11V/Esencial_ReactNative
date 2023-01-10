@@ -34,7 +34,7 @@ export const FoodNavigation = ({ navigation }) => {
 							color={COLORS.backgroundScreen}
 						/>
 					</Pressable>
-					<Pressable
+					{/* <Pressable
 						onPress={() => navigation.push("calendarNavigator")}
 					>
 						<Ionicons
@@ -42,7 +42,7 @@ export const FoodNavigation = ({ navigation }) => {
 							size={25}
 							color={COLORS.backgroundScreen}
 						/>
-					</Pressable>
+					</Pressable> */}
 				</View>
 			</LinearGradient>
 	);
